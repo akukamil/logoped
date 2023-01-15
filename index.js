@@ -1,5 +1,5 @@
 var M_WIDTH=800, M_HEIGHT=450;
-var app, game_res, game, objects={}, state='', game_tick=0, my_turn=false, git_src='',some_process = {},  game_platform='',is_listening=false;
+var app, game_res, game, objects={}, state='', game_tick=0, my_turn=false, git_src='',some_process = {},  game_platform='',is_listening=false,say=false;
 const words=['колокол','гараж','гигабайт','монета','система','мочалка','шишка','лопата']
 
 irnd = function (min,max) {	
@@ -256,7 +256,7 @@ game={
 		this.cur_word_index--;
 		this.cur_word_index<0&&(this.cur_word_index=0);
 		objects.word.text=words[this.cur_word_index];	
-		
+		objects.word_result.text='';
 		sound.play('click');
 	},
 	
@@ -265,26 +265,42 @@ game={
 		this.cur_word_index++;
 		this.cur_word_index>(words.length-1)&&(this.cur_word_index=words.length-1);
 		objects.word.text=words[this.cur_word_index];	
-		
+		objects.word_result.text='';
 		sound.play('click');
 	},
 	
 	start_down:function(){
+		
+		
 		if(is_listening){
 			sound.play('locked');
 			return;			
 		}
-
+		
+		is_listening=true;
+		
 		
 		sound.play('click');
 		
 		this.listen_word();
 	},
 	
+	say_word:async function (word) {
+		
+		await new Promise(function(resolve, reject){	  
+			utterance.text = word;
+			synth.speak(utterance); 
+			utterance.onend = resolve;
+		});	
+		
+	},
+	
 	listen_word:async function() {
 		
-		is_listening=true;
-	
+		objects.word_result.text='Жди...';
+		if(say) await this.say_word('скажи '+objects.word.text);	
+		objects.word_result.text='Говори...';
+		
 		let final_word ="";
 		await new Promise(function(resolve, reject){
 
@@ -307,8 +323,9 @@ game={
 			};	
 		  
 			recognizer.onerror = function (event) {
-			  console.log("onerror")          
-			  resolve();
+				console.log("onerror")     
+				final_word='какая-то ошибка((('
+				resolve();
 			};	
 		  
 			recognizer.onnomatch= function (event) {
