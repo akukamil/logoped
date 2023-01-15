@@ -285,6 +285,24 @@ game={
 		this.listen_word();
 	},
 	
+	ss_down:function(){
+		
+		if(say){
+			
+			objects.ss_front.x=objects.ss_front.sx;
+			say=false;
+			
+		}else{
+			
+			objects.ss_front.x=objects.ss_front.sx+38;
+			say=true;			
+		}
+		
+		sound.play('click');
+		
+		
+	},
+	
 	say_word:async function (word) {
 		
 		await new Promise(function(resolve, reject){	  
@@ -335,7 +353,7 @@ game={
 		  
 		});
 		
-		objects.word_result.text=final_word;
+		objects.word_result.text=final_word.toLowerCase();
 		is_listening=false;
 
 	}
