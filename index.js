@@ -353,7 +353,7 @@ game={
 		  
 		});
 		
-		if(objects.wordtext===final_word){
+		if(objects.word.text===final_word){
 			sound.play('win');
 		}else{
 			sound.play('lose');	
