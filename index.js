@@ -275,7 +275,8 @@ var utterance = new SpeechSynthesisUtterance();
 utterance.lang = 'ru-Ru';
 utterance.rate = 1.25;
 
-var recognizer = new webkitSpeechRecognition();
+const SpeechRecognition=window.SpeechRecognition || webkitSpeechRecognition;
+var recognizer = new SpeechRecognition;
 recognizer.lang = 'ru-Ru';
 
 game={
