@@ -277,6 +277,7 @@ utterance.rate = 1.25;
 
 const SpeechRecognition=window.SpeechRecognition || webkitSpeechRecognition;
 var recognizer = new SpeechRecognition;
+recognizer.interimResults=true;
 recognizer.lang = 'ru-Ru';
 
 game={
@@ -365,6 +366,7 @@ game={
 			  
 			  console.log("onresult")
 			  var result = event.results[event.resultIndex];
+			  objects.word_result.text=result[0].transcript.toLowerCase();
 			  if (result.isFinal) {
 				  final_word = result[0].transcript;
 				  final_word = final_word.toLowerCase();
