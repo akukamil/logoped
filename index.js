@@ -353,7 +353,13 @@ game={
 		  
 		});
 		
-		objects.word_result.text=final_word.toLowerCase();
+		if(objects.wordtext===final_word){
+			sound.play('win');
+		}else{
+			sound.play('lose');	
+		}
+		
+		objects.word_result.text=final_word;
 		is_listening=false;
 
 	}
@@ -615,7 +621,9 @@ async function load_resources() {
 
 	game_res.add('click',git_src+'sounds/click.mp3');
 	game_res.add('locked',git_src+'sounds/locked.mp3');
-
+	game_res.add('win',git_src+'sounds/win.mp3');
+	game_res.add('lose',git_src+'sounds/lose.mp3');
+	
     //добавляем из листа загрузки
     for (var i = 0; i < load_list.length; i++)
         if (load_list[i].class === "sprite" || load_list[i].class === "image" )
