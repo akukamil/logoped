@@ -437,10 +437,10 @@ game={
 			  
 			  console.log("onresult")
 			  var result = event.results[event.resultIndex];
-			  objects.word_result.text=result[0].transcript.toLowerCase();
+			  objects.word_result.text=result[0].transcript.toUpperCase();
 			  if (result.isFinal) {
 				  final_word = result[0].transcript;
-				  final_word = final_word.toLowerCase();
+				  final_word = final_word.toUpperCase();
 				  resolve();
 			  }
 			};	
