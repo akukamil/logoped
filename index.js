@@ -1,43 +1,37 @@
 var M_WIDTH=800, M_HEIGHT=450;
 var app, game_res, game, objects={}, state='', game_tick=0, my_turn=false, git_src='',some_process = {},  game_platform='',is_listening=false,say=false;
-const words=[
-'буханка из буфета набухла',
-'люба в бочку бросила бабочку',
-'балерина была на балу',
-'я буду работать булочником',
-'бабушка заботится и балует внуков',
-'тыкву вкусную сварили',
-'на воротах восемь ворон',
-'корова взмахнула хвостом',
-'в городе много магазинов',
-'огонь на берегу пугал попугаев',
-'доктор дотронулся до бедра',
-'жук жужжит в железной банке',
-'моя жалкая надежда на жилье',
-'живем да хлеб жуем',
-'победа досталась двум командам',
-'водолаз дышит кислородом',
-'классная косметика в косметичке',
-'кошка лакала молоко',
-'капитан купил куртку',
-'лось попал в ловушку',
-'пилот надел пилотку',
-'с яблони упало спелое яблоко',
-'лошадка поскакала на луг',
-'поросята прыгали на поляне',
-'пуля попала в пустоту',
-'папа отправил по почте посылку',
-'доброе утро татарстан',
-'с утра мы бродим по старому городу',
-'собака смотрела на сороку',
-'сахар насыпали в стакан',
-'талантливый тактик читает маршрут',
-'утром вставать трудно',
-'крот роет тоннель',
-'так только космонавты кушают',
-'хвала хорошему хозяину',
-'я хочу махровый халат'
-]
+const letters=['Б','В','Г','Д','Ж','З','К','Л','М','Н','П','Р','С','Т','Ф'];
+const words={'Б':['БАБУШКА УБРАЛАСЬ В ИЗБУШКЕ','РАЗБУДИЛИ БУЛЬДОГА В БУДКЕ','В БОЛЬШОМ БАКЕ БАКТЕРИИ','ЗАБАВНЫЙ БАРАБАНЩИК БЫСТРО УБЕЖАЛ','В БУТЫЛКЕ БУЛЬКАЛ БУЛЬОН','БАЛЕРИНА БЫЛА НА БАЛУ','БОТИНКИ БЫСТРО НАМОКЛИ','АВТОБУС ОБОГНАЛ БУЛЬДОЗЕР','В БУТЫЛКЕ БЫЛ ЦЕЛЕБНЫЙ БАЛЬЗАМ','БАБУШКА ЗАБОТИТСЯ И БАЛУЕТ ВНУКОВ','БОЛЬШОЙ БАНАН','БАБОЧКА НА БАЛКОНЕ','ОБОРОНА БАШНИ','БОЛЬШОЙ БУЛЫЖНИК','БЫВШИЙ БАРАБАНЩИК','БУМЕРАНГ АБОРИГЕНА','БУМАЖНИК БАНКИРА','РЫБЫ В БАНКЕ','БОЛЬШОЙ БАНТ','ГОЛУБОЙ БАНТ'],'В':['ВОЗДУШНАЯ ВАТА','ВОЛК С КОРОВОЙ','ВКУСНАЯ ВЫПЕЧКА','ВЫГОДНЫЙ ВАРИАНТ','ВОКЗАЛ ДЛЯ ДВОИХ','ВОДОЛАЗ ПОД ВОДОЙ','ВОДИТЕЛЬ ТРАМВАЯ','ВОЛШЕБНЫЕ СЛОВА','ВЫПУСКНИК ВОЛНОВАЛСЯ','ВЫЛЕПИТЬ СНЕГОВИКА','ВОТ ВАМ СЛАДКОВАТАЯ ВОДА','ВОРОНА ВОВРЕМЯ УВЕРНУЛАСЬ ОТ ВАЛУНА','НА ВОРОТАХ ВОСЕМЬ ВОРОН','У КОРОВЫ НЕТ ГРИВЫ','ВАХТОВЫЙ АВТОБУС ВОЗИТ ВОЖАТЫХ','ВРУН ВРАЛ ВСЕМ ВОКРУГ','ВОРОН ВЫСОКО ВЗЛЕТЕЛ','ДВОЙНАЯ ВЫГОДА','ВОЛЬНЫЙ ВОИН','ТВОРОЖНЫЕ ВАРЕНИКИ'],'Г':['ГОРОДСКАЯ ГАЗЕТА','ГАЛСТУК В ГОРОШЕК','ГАЛКА НА ГАЗОНЕ','ГОРОД В ГОРАХ','ГРОМКИЙ ГОЛОС','ГОСТИ В ВАГОНЕ','ГОТОВИТЬ ГОВЯДИНУ','ДОГОНЯТЬ ПИНГВИНОВ','ГОЛОДНЫЕ ГОБЛИНЫ','ГОРБАТЫЙ ГНОМ ГОРЬКО ГОРЕВАЛ','ГЕНЕРАЛ ВОЗГЛАВИЛ ГВАРДИЮ','ГОНЩИК ГОТОВ К ГОНКАМ','ФОТОГРАФ ДОГОНЯЛ ПИНГВИНОВ','ОГОНЬ НА БЕРЕГУ ПУГАЛ ПОПУГАЕВ','ЭТА ГРУША ГНИЛАЯ','ГОТОВАЯ ИГРУШКА','ГЛАВНЫЙ  ГОСПИТАЛЬ','ГОРСТКА ГЛИНЫ','ТРОГАТЬ БУМАГУ','ОТГАДАТЬ ГОЛОВОЛОМКУ'],'Д':['У ДВОРНИКА ВЫХОДНОЙ','ДАВНИЙ ДОЛГ','ДАЧА ХУДОЖНИКА','ДАЛЬНЯЯ ДОРОГА','ДОМ В САДУ','НОВОГОДНИЙ ПРАЗДНИК','ХУДОЕ ЧУДОВИЩЕ','ДОЛГИЙ ДОЖДЬ','ОГОРОДЫ ЗА ГОРОДОМ','ДЫХАНИЕ ДРАКОНА','ДОЖДЛИВАЯ ПОГОДА','ДАЛЬНЯЯ ДОРОГА В ДЮНАХ','ВОДОЛАЗ ДОСТАЛ СО ДНА МЕДУЗУ','ДОКТОР ДОТРОНУЛСЯ ДО БЕДРА','ДАЧА ДЕДУШКИ ДАЛЕКО ОТ ГОРОДА','ДОЛГИЙ ДОЖДЬ ВСЕМ НАДОЕЛ','ЛЕДОКОЛ ДАЛЕКО ВО ЛЬДАХ','ЧУДАК ПОДНЯЛСЯ НА ЧЕРДАК','ТЫ ДОЛЖЕН ДОЙТИ ДО ДАЛЬНЕГО ГОРОДА','ПОБЕДА ДОСТАЛАСЬ ДВУМ КОМАНДАМ'],'Ж':['ЖАБА В ЛУЖЕ','ЖАДНЫЙ ЖАДИНА','ТЯЖЕЛАЯ БАРЖА','РЖАНИЕ ЖЕРЕБЕНКА','ЖУЖЖАНИЕ ЖУКА','КОЖАНЫЙ ЖАКЕТ','ЖЕЛАНИЕ ЖИТЬ','НЕЖНАЯ КОЖА','БУМАЖНЫЙ ЖУК','КОЖА ЖИРАФА','БЛИЖЕ К МЕДВЕЖОНКУ','ЖЕВАТЬ ЖЕЛЕ','ЖИЛЕТКА МУЖА','УЖ НЕ МОЖЕТ УЖАЛИТЬ','Я ЖУЮ ЖИДКОЕ МОРОЖЕНОЕ','МОЯ ЖАЛКАЯ НАДЕЖДА НА ЖИЛЬЕ','Я ЖУЮ ЖВАЧКУ','ПОЖАРНИК БЕЖИТ НА ПОЖАР','ЖУК ПОД ОРАНЖЕВЫМ АБАЖУРОМ','ЖАЛКИЙ ЖРЕБИЙ МОЙ'],'З':['ЗАПРЕТНАЯ ЗОНА','НА ЗАВОДЕ ЗАБАСТОВКА','ЗНАНИЕ ЯЗЫКА','ЗАБОТА О ЗДОРОВЬЕ','ЗОРКИЕ ГЛАЗА','ИЗБЫТОК АЗОТА','ПРИЗНАК ГРОЗЫ','ЗАМОК НА ЗАБОРЕ','ЗНАКОМАЯ МУЗЫКА','ЗОЛОТАЯ КАЗНА','БЕЗУМНАЯ ЗАТЕЯ','Я ЗАЕХАЛ НА ЗАВОД','Я ЗАКРЫЛ ГЛАЗА','ГРУЗОВИК С АРБУЗАМИ','ЗВЕНИТ ЗВОНКИЙ ЗВОНОК','МЫ НЕ ЗНАЛИ НАЗВАНИЯ ГРУЗА','КОЗА ЗАБЕЖАЛА В ПОЕЗД','ДЕД МОРОЗ ЗАГАДАЛ ЗАГАДКУ','В ЗООПАРК ПРИВЕЗЛИ ЗУБРА','Я ОПОЗДАЛА НА ЗАНЯТИЯ'],'К':['КАБЕЛЬНЫЙ  КАНАЛ','ТОНКАЯ КАЛЬКА','НЕСКОЛЬКО КУСКОВ','КАНДИДАТ НАУК','ИСКАТЬ КОНФЕТЫ','ВКУСНЫЙ КОФЕ','КУСОК КАБАЧКА','ВЫСКОЧИЛ НА КАМЕНЬ','ЗАКРЫТАЯ КАЛИТКА','КОЛОДА КАРТ','ОСКАЛ ВОЛКА','ЗАКОНЧИЛСЯ КЛЮЧЕВОЙ КАДР','КАНАРЕЙКА В КЛЕТКЕ СКУЧАЕТ','СКАЛОЛАЗ СПУСКАЛСЯ СО СКАЛ','КОШКА ЛАКАЛА МОЛОКО','В КУВШИНЕ КОЗЬЕ МОЛОКО','НА СУКУ КУКУЕТ КУКУШКА','КАПИТАН КУПИЛ КУРТКУ','МЯУКАЕТ МОКРАЯ КОШКА','КОМАНДИР КОМАНДУЕТ'],'Л':['БЕЛЫЙ ЛАНДЫШ','БЕЛЫЙ ГОЛУБЬ','ГЛАДКАЯ ЛАВОЧКА','ЛАСКОВЫЕ ЛАДОШКИ','МИЛАЯ УЛЫБКА','ЛАПКА БЕЛКИ','ЛАТЫ ИЗ ЛАТУНИ','ЛОМКИЙ ВОЛОС','КОЛКАЯ ИГОЛОЧКА','СПЕЛОЕ СЛАДКОЕ ЯБЛОКО','ЛУЧ СОЛНЦА','БЕЛОЕ ПЛАТЬЕ','ЛАМПА УПАЛА НА ПОЛ','МАЛЫШ ИГРАЛ В ЛОТО','У ПЛОТНИКА В ЛАДОНЯХ ЛОБЗИК','ПЛАМЯ ОХВАТИЛО ВЕСЬ ПЛОТ','ЛАЯЛА ЛОХМАТАЯ ЛАЙКА','БЕЛАЯ АКУЛА ИСПУГАЛА АКВАЛАНГИСТА','ОКОЛО ДОМА ЛАЯЛ ПЕС','ПО ВОЛНАМ ПЛЫЛ ПЛОТ'],'М':['РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО'],'Н':['РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО'],'П':['РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО'],'Р':['РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО'],'С':['РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО'],'Т':['РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО'],'Ф':['РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО','РЕШЕТО']}
+
+class letter_class extends PIXI.Container{
+	
+	constructor(letter) {
+		super();
+		this.letter=letter;
+		
+		this.bcg=new PIXI.Sprite(gres.letter_bcg.texture);
+		this.bcg.interactive=true;
+		this.bcg.buttonMode=true;
+		this.bcg.pointerdown=main_menu.button_down.bind(main_menu,this.letter);
+		this.bcg.pointerover=function(){this.bcg.alpha=0.5;}.bind(this);
+		this.bcg.pointerout=function(){this.bcg.alpha=1;}.bind(this);
+		this.bcg.width = 150;
+		this.bcg.height = 80;
+		
+		this.ltext="";
+		this.ltext=new PIXI.BitmapText('...', {fontName: 'mfont',fontSize: 50});
+		this.ltext.anchor.set(0.5,0.5);
+		this.ltext.x=75;
+		this.ltext.y=40;
+		this.ltext.text=letter;
+		
+		this.addChild(this.bcg,this.ltext);
+		
+	}
+	
+	
+	
+}
 
 irnd = function (min,max) {	
     min = Math.ceil(min);
@@ -268,7 +262,6 @@ sound = {
 	
 }
 
-
 var synth = window.speechSynthesis;
 
 var utterance = new SpeechSynthesisUtterance();
@@ -280,32 +273,110 @@ var recognizer = new SpeechRecognition;
 recognizer.interimResults=true;
 recognizer.lang = 'ru-Ru';
 
+main_menu={
+	
+	activate(){
+		
+		objects.main_menu_header.visible=true;
+		objects.letter_buttons.forEach(l=>l.visible=true);
+		
+	},
+	
+	close(){
+		
+		objects.main_menu_header.visible=false;
+		objects.letter_buttons.forEach(l=>l.visible=false);
+		
+	},
+	
+	button_down(letter){
+		
+		this.close();
+		game.activate(letter);
+		
+	}
+	
+}
+
 game={
 	
 	cur_word_index:0,
+	cor_word_cnt:0,
+	words:[],
+	complete_perc:0,
 	
-	activate: function(role, opponent) {
+	activate: function(letter) {
+		this.words=words[letter];
+		objects.word.text=this.words[this.cur_word_index];
+		objects.word.visible=true;
+		objects.word_result.visible=true;
+		objects.prv_word_button.visible=true;
+		objects.next_word_button.visible=true;
+		objects.start_button.visible=true;
+		objects.back_button.visible=true;
+		objects.ss_bcg.visible=true;
+		objects.ss_front.visible=true;
+		objects.progress_cont.visible=true;
+		objects.mic.visible=true;
+		this.complete_perc=0;
+		objects.progress_bar.width=0;
+		some_process.game=this.process;
 		
-		objects.word.text=words[this.cur_word_index]
-
+		
+		
 	},
 	
-	prv_word_down:function(){
+	close(){
 		
-		this.cur_word_index--;
-		this.cur_word_index<0&&(this.cur_word_index=0);
-		objects.word.text=words[this.cur_word_index];	
-		objects.word_result.text='';
-		sound.play('click');
+		objects.word.visible=false;
+		objects.word_result.visible=false;
+		objects.prv_word_button.visible=false;
+		objects.next_word_button.visible=false;
+		objects.start_button.visible=false;
+		objects.back_button.visible=false;
+		objects.ss_bcg.visible=false;
+		objects.ss_front.visible=false;
+		objects.mic.visible=false;
+		objects.progress_cont.visible=false;
+		some_process.game=this.process;
+		
 	},
 	
-	next_word_down:function(){
+	process(){
+		objects.mic.alpha=Math.abs(Math.sin(game_tick*3));	
+		
+	},
+	
+	back_down(){
+		
+		this.close();
+		main_menu.activate();
+		
+		
+	},
+	
+	wrong_answer:function(){
 		
 		this.cur_word_index++;
-		this.cur_word_index>(words.length-1)&&(this.cur_word_index=words.length-1);
-		objects.word.text=words[this.cur_word_index];	
+		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
+		objects.word.text=this.words[this.cur_word_index];	
 		objects.word_result.text='';
 		sound.play('click');
+
+		
+	},
+	
+	correct_answer:function(){
+		
+		this.cor_word_cnt++;
+		this.cur_word_index++;
+		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
+		objects.word.text=this.words[this.cur_word_index];	
+		objects.word_result.text='';
+		sound.play('click');
+		this.complete_perc=this.cor_word_cnt/19;
+		objects.progress_bar.width=objects.progress_bar.max_width*this.complete_perc;
+
 	},
 	
 	start_down:function(){
@@ -395,7 +466,9 @@ game={
 		
 		if(objects.word.text===final_word){
 			sound.play('win');
+			this.correct_answer();
 		}else{
+			this.wrong_answer();
 			sound.play('lose');	
 		}
 		
@@ -807,7 +880,7 @@ async function init_game_env(lang) {
 	main_loop();	
 		
 	//показыаем основное меню
-	game.activate();
+	main_menu.activate();
 	
 	console.clear()
 
