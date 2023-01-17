@@ -341,8 +341,7 @@ game={
 	},
 	
 	process(){
-		//objects.mic.alpha=Math.abs(Math.sin(game_tick*3));	
-		
+		objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
 	},
 	
 	back_down(){
@@ -353,10 +352,10 @@ game={
 		
 	},
 	
-	wrong_answer:function(){
+	wrong_answer:function(){		
 		
-		
-		sound.play('click');
+		sound.play('click');		
+		objects.start_button.alpha=1;
 		objects.start_button.texture=gres.incorrect_img.texture;
 		this.next_word();
 		
@@ -364,11 +363,13 @@ game={
 	
 	correct_answer:function(){
 		
+		
 		this.cor_word_cnt++;	
-		objects.word_result.text='';
-		sound.play('click');
 		this.complete_perc=this.cor_word_cnt/19;
 		objects.progress_bar.width=objects.progress_bar.max_width*this.complete_perc;
+		
+		sound.play('click');		
+		objects.start_button.alpha=1;
 		objects.start_button.texture=gres.correct_img.texture;
 		this.next_word();
 	},
@@ -377,6 +378,7 @@ game={
 		
 		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
 		
+		objects.start_button.interactive=true;
 		objects.word_result.text='';
 		this.cur_word_index++;
 		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
@@ -393,6 +395,7 @@ game={
 			return;			
 		}
 		
+		objects.start_button.interactive=false;
 		is_listening=true;
 		objects.start_button.texture=gres.mic.texture;
 		
