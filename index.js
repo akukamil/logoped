@@ -317,7 +317,6 @@ game={
 		objects.ss_bcg.visible=true;
 		objects.ss_front.visible=true;
 		objects.progress_cont.visible=true;
-		objects.mic.visible=true;
 		this.complete_perc=0;
 		objects.progress_bar.width=0;
 		some_process.game=this.process;
@@ -336,14 +335,13 @@ game={
 		objects.back_button.visible=false;
 		objects.ss_bcg.visible=false;
 		objects.ss_front.visible=false;
-		objects.mic.visible=false;
 		objects.progress_cont.visible=false;
 		some_process.game=this.process;
 		
 	},
 	
 	process(){
-		objects.mic.alpha=Math.abs(Math.sin(game_tick*3));	
+		//objects.mic.alpha=Math.abs(Math.sin(game_tick*3));	
 		
 	},
 	
@@ -357,26 +355,32 @@ game={
 	
 	wrong_answer:function(){
 		
-		this.cur_word_index++;
-		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
-		objects.word.text=this.words[this.cur_word_index];	
 		objects.word_result.text='';
 		sound.play('click');
-
+		objects.start_button.texture=gres.incorrect_img.texture;
+		this.next_word();
 		
 	},
 	
 	correct_answer:function(){
 		
-		this.cor_word_cnt++;
-		this.cur_word_index++;
-		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
-		objects.word.text=this.words[this.cur_word_index];	
+		this.cor_word_cnt++;	
 		objects.word_result.text='';
 		sound.play('click');
 		this.complete_perc=this.cor_word_cnt/19;
 		objects.progress_bar.width=objects.progress_bar.max_width*this.complete_perc;
-
+		objects.start_button.texture=gres.correct_img.texture;
+		this.next_word();
+	},
+	
+	next_word:async function(){
+		
+		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+		this.cur_word_index++;
+		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
+		objects.word.text=this.words[this.cur_word_index];	
+		objects.start_button.texture=gres.start_button.texture;
+		
 	},
 	
 	start_down:function(){
@@ -388,7 +392,7 @@ game={
 		}
 		
 		is_listening=true;
-		
+		objects.start_button.texture=gres.mic.texture;
 		
 		sound.play('click');
 		
