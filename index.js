@@ -474,6 +474,8 @@ game={
 		  
 		});
 		
+		is_listening=false;		
+		objects.word_result.text=final_word;		
 		if(objects.word.text===final_word){
 			sound.play('win');
 			this.correct_answer();
@@ -482,8 +484,8 @@ game={
 			sound.play('lose');	
 		}
 		
-		objects.word_result.text=final_word;
-		is_listening=false;
+
+
 
 	}
 
