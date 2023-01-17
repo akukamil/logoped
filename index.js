@@ -347,6 +347,11 @@ game={
 	
 	back_down(){
 		
+		if(is_listening){
+			
+			return;
+		}
+		
 		this.close();
 		main_menu.activate();
 		
@@ -445,14 +450,13 @@ game={
 		await new Promise(function(resolve, reject){
 
 			recognizer.start();
+			
 			recognizer.onresult = function (event) {
 			  
-			  console.log("onresult")
 			  var result = event.results[event.resultIndex];
 			  objects.word_result.text=result[0].transcript.toUpperCase();
 			  if (result.isFinal) {
-				  final_word = result[0].transcript;
-				  final_word = final_word.toUpperCase();
+				  final_word = result[0].transcript.toUpperCase()
 				  resolve();
 			  }
 			};	
@@ -475,6 +479,7 @@ game={
 			};	
 		  
 		});
+		
 		
 		is_listening=false;		
 		objects.word_result.text=final_word;		
