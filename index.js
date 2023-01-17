@@ -355,7 +355,7 @@ game={
 	
 	wrong_answer:function(){
 		
-		objects.word_result.text='';
+		
 		sound.play('click');
 		objects.start_button.texture=gres.incorrect_img.texture;
 		this.next_word();
@@ -376,6 +376,8 @@ game={
 	next_word:async function(){
 		
 		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+		
+		objects.word_result.text='';
 		this.cur_word_index++;
 		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
 		objects.word.text=this.words[this.cur_word_index];	
