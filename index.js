@@ -341,8 +341,8 @@ game={
 	},
 	
 	process(){
-		//if(is_listening)
-		//	objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
+		if(is_listening)
+			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
 	},
 	
 	back_down(){
