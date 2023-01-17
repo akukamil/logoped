@@ -341,8 +341,8 @@ game={
 	},
 	
 	process(){
-		if(is_listening)
-			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
+		//if(is_listening)
+		//	objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
 	},
 	
 	back_down(){
@@ -376,6 +376,8 @@ game={
 	},
 	
 	next_word:async function(){
+		
+		objects.start_button.tint=objects.start_button.base_tint;
 		
 		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
 		
