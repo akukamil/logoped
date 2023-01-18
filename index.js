@@ -305,35 +305,32 @@ game={
 	words:[],
 	present_count:0,
 	stable:true,
-	presents_resourses,
 	
 	complete_perc:0,
 	
 	activate: function(letter) {
 		this.words=words[letter];
 		objects.word.text=this.words[this.cur_word_index];
-		objects.word.visible=true;
-		objects.word_result.visible=true;
-		objects.start_button.visible=true;
-		objects.back_button.visible=true;
+
+		objects.sun_rays.visible=false;
+		this.cur_word_index=0;
+		this.cor_word_cnt=0;
+		
+		anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
+		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
 		objects.ss_bcg.visible=true;
 		objects.ss_front.visible=true;
-		objects.progress_cont.visible=true;
+		anim2.add(objects.progress_cont,{alpha:[0,1]},true,1,'linear');
 		this.complete_perc=0;
 		objects.progress_bar.width=0;
 		some_process.game=this.process;
-		
-		
 		
 	},
 	
 	close(){
 		
 		
-		
-		objects.word.visible=false;
-		objects.word_result.visible=false;
-		objects.start_button.visible=false;
+		objects.main_data.visible=false;
 		objects.back_button.visible=false;
 		objects.ss_bcg.visible=false;
 		objects.ss_front.visible=false;
@@ -377,11 +374,21 @@ game={
 	
 	async add_present(present_id){
 		
+		
+
+		const loader=new PIXI.Loader();		
+		await new Promise(function(resolve, reject) {			
+			loader.add('present_img', git_src+'/presents/'+irnd(0,53)+'.png',{loadType: PIXI.LoaderResource.LOAD_TYPE.IMAGE, timeout: 3000});						
+			loader.load(function(l,r) {	resolve(l) });
+		});
+		
+		
 		const obj=objects['present'+present_id];
 		obj.texture=gres.present.texture;
-		await anim2.add(obj,{y:[-200,obj.sy]},true,3,'easeOutBounce');
+		await anim2.add(obj,{y:[-200,obj.sy]},true,3,'easeOutBounce');		
 		await new Promise((resolve, reject) => setTimeout(resolve, 1000));
-		obj.texture=gres['present'+present_id].texture;
+		sound.play('present_sound');
+		obj.texture=loader.resources.present_img.texture;
 	},
 	
 	correct_answer:function(){
@@ -411,7 +418,7 @@ game={
 		sound.play('click');		
 		objects.start_button.alpha=1;
 		
-		anim2.add(objects.start_button,{rotation:[0,0.5],scale_xy:[0.666,1]},true,2,'ease2back');
+		anim2.add(objects.start_button,{rotation:[0,0.5],scale_xy:[0.666,1]},true,1,'ease2back');
 		objects.start_button.texture=gres.correct_img.texture;
 		this.next_word();
 	},
@@ -430,20 +437,21 @@ game={
 		objects.start_button.tint=objects.start_button.base_tint;
 		
 		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
-		
-		
-		objects.word_result.text='';
+				
 		this.cur_word_index++;
 		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
 		
-		await anim2.add(objects.word,{x:[objects.word.sx, -400]},true,0.5,'linear');
+		await anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},true,0.5,'easeInBack');
 		
-		objects.word.text=this.words[this.cur_word_index];			
+		objects.word.text=this.words[this.cur_word_index];					
+		objects.word_result.text='';	
+		objects.start_button.texture=gres.start_button.texture;
 		
-		await anim2.add(objects.word,{x:[1200, objects.word.sx]},true,0.5,'linear');
+		await anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
 				
 		objects.start_button.interactive=true;
-		objects.start_button.texture=gres.start_button.texture;
+		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
+		
 		this.stable=true;
 		
 	},
@@ -456,6 +464,7 @@ game={
 			return;			
 		}
 		
+		anim2.add(objects.back_button,{x:[objects.back_button.x,-100]},false,0.5,'easeInBack');
 		objects.start_button.interactive=false;
 		is_listening=true;
 		objects.start_button.texture=gres.mic.texture;
@@ -809,6 +818,7 @@ async function load_resources() {
 	game_res.add('locked',git_src+'sounds/locked.mp3');
 	game_res.add('win',git_src+'sounds/win.mp3');
 	game_res.add('lose',git_src+'sounds/lose.mp3');
+	game_res.add('present_sound',git_src+'sounds/present.mp3');
 	
     //добавляем из листа загрузки
     for (var i = 0; i < load_list.length; i++)
