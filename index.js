@@ -439,7 +439,7 @@ game={
 		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
 				
 		this.cur_word_index++;
-		this.cur_word_index>(this.words.length-1)&&(this.cur_word_index=this.words.length-1);
+		this.cur_word_index=this.cur_word_index%this.words.length;
 		
 		await anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},true,0.5,'easeInBack');
 		
