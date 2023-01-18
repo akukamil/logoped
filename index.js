@@ -123,7 +123,7 @@ anim2 = {
 	},
 	
 	ease2back : function(x) {
-		return Math.sin(x*Math.PI*2);
+		return Math.sin(x*Math.PI);
 	},
 	
 	easeInOutCubic: function(x) {
@@ -303,7 +303,9 @@ game={
 	cur_word_index:0,
 	cor_word_cnt:0,
 	words:[],
+	present_count:0,
 	stable:true,
+	presents_resourses,
 	
 	complete_perc:0,
 	
@@ -358,27 +360,58 @@ game={
 		
 	},
 	
-	wrong_answer:function(){		
+	wrong_answer:function(){			
+		
+		this.cor_word_cnt--;	
+		if(this.cor_word_cnt<0) this.cor_word_cnt=0;
+		this.complete_perc=this.cor_word_cnt/19;
+		objects.progress_bar.width=objects.progress_bar.max_width*this.complete_perc;
 		
 		sound.play('click');		
 		objects.start_button.alpha=1;
 		objects.start_button.texture=gres.incorrect_img.texture;
+		anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
 		this.next_word();
 		
+	},
+	
+	async add_present(present_id){
 		
+		const obj=objects['present'+present_id];
+		obj.texture=gres.present.texture;
+		await anim2.add(obj,{y:[-200,obj.sy]},true,3,'easeOutBounce');
+		await new Promise((resolve, reject) => setTimeout(resolve, 1000));
+		obj.texture=gres['present'+present_id].texture;
 	},
 	
 	correct_answer:function(){
 		
+		
+
 		this.show_sun_rays();
 		this.cor_word_cnt++;	
 		this.complete_perc=this.cor_word_cnt/19;
 		objects.progress_bar.width=objects.progress_bar.max_width*this.complete_perc;
+					
 		
+		if(this.cor_word_cnt===10 && objects.present0.visible===false && objects.progress_present0.visible===true){
+			objects.progress_present0.visible=false;
+			this.add_present(0);
+		}
+		if(this.cor_word_cnt===14 && objects.present1.visible===false && objects.progress_present1.visible===true){
+			objects.progress_present1.visible=false;
+			this.add_present(1);
+		}
+		if(this.cor_word_cnt===19 && objects.present2.visible===false && objects.progress_present2.visible===true){
+			objects.progress_present2.visible=false;
+			this.add_present(2);
+		}
 		
 		
 		sound.play('click');		
 		objects.start_button.alpha=1;
+		
+		anim2.add(objects.start_button,{rotation:[0,0.5],scale_xy:[0.666,1]},true,2,'ease2back');
 		objects.start_button.texture=gres.correct_img.texture;
 		this.next_word();
 	},
@@ -500,6 +533,7 @@ game={
 		  
 		});
 		
+		final_word=final_word.replace('Ё','Е');
 		
 		is_listening=false;		
 		objects.word_result.text=final_word;		
@@ -507,7 +541,7 @@ game={
 			sound.play('win');
 			this.correct_answer();
 		}else{
-			this.wrong_answer();
+			this.correct_answer();
 			sound.play('lose');	
 		}
 		
