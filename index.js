@@ -23,6 +23,7 @@ class letter_class extends PIXI.Container{
 		this.ltext.anchor.set(0.5,0.5);
 		this.ltext.x=75;
 		this.ltext.y=40;
+		this.ltext.tint=0x000000;
 		this.ltext.text=letter;
 		
 		this.addChild(this.bcg,this.ltext);
@@ -325,10 +326,24 @@ game={
 		objects.progress_bar.width=0;
 		some_process.game=this.process;
 		
+		
+		objects.present0.visible=false;
+		objects.present1.visible=false;
+		objects.present2.visible=false;
+		
+		objects.progress_present0.visible=true;
+		objects.progress_present1.visible=true;
+		objects.progress_present2.visible=true;
+		
+		
+		
 	},
 	
 	close(){
 		
+		objects.present0.visible=false;
+		objects.present1.visible=false;
+		objects.present2.visible=false;
 		
 		objects.main_data.visible=false;
 		objects.back_button.visible=false;
@@ -362,7 +377,8 @@ game={
 		this.cor_word_cnt--;	
 		if(this.cor_word_cnt<0) this.cor_word_cnt=0;
 		this.complete_perc=this.cor_word_cnt/19;
-		objects.progress_bar.width=objects.progress_bar.max_width*this.complete_perc;
+		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
+		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
 		
 		sound.play('click');		
 		objects.start_button.alpha=1;
@@ -398,8 +414,10 @@ game={
 		this.show_sun_rays();
 		this.cor_word_cnt++;	
 		this.complete_perc=this.cor_word_cnt/19;
-		objects.progress_bar.width=objects.progress_bar.max_width*this.complete_perc;
-					
+		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
+		
+		
+		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
 		
 		if(this.cor_word_cnt===10 && objects.present0.visible===false && objects.progress_present0.visible===true){
 			objects.progress_present0.visible=false;
@@ -550,7 +568,7 @@ game={
 			sound.play('win');
 			this.correct_answer();
 		}else{
-			this.wrong_answer();
+			this.correct_answer();
 			sound.play('lose');	
 		}
 		
@@ -805,7 +823,7 @@ async function load_resources() {
 	document.getElementById("m_progress").style.display = 'flex';
 
 	git_src="https://akukamil.github.io/logoped/"
-	//git_src=""
+	git_src=""
 
 	//подпапка с ресурсами
 	let lang_pack = 'RUS';
