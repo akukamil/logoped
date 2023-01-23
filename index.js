@@ -568,7 +568,7 @@ game={
 			sound.play('win');
 			this.correct_answer();
 		}else{
-			this.correct_answer();
+			this.wrong_answer();
 			sound.play('lose');	
 		}
 		
