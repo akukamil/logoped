@@ -269,7 +269,7 @@ var utterance = new SpeechSynthesisUtterance();
 utterance.lang = 'ru-Ru';
 utterance.rate = 1.25;
 
-const SpeechRecognition=window.SpeechRecognition || webkitSpeechRecognition;
+const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition;
 var recognizer = new SpeechRecognition;
 recognizer.interimResults=true;
 recognizer.lang = 'ru-Ru';
