@@ -277,6 +277,16 @@ recognizer.lang = 'ru-Ru';
 main_menu={
 	
 	activate(){
+				
+
+		navigator.mediaDevices.getUserMedia({ audio: true })
+		.then(function(stream) {
+			alert('You let me use your mic!')
+		})
+		.catch(function(err) {
+			alert('No mic for you!'+err)
+		});
+		
 		
 		objects.main_menu_header.visible=true;
 		objects.letter_buttons.forEach(l=>l.visible=true);
