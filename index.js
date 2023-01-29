@@ -1,38 +1,43 @@
 var M_WIDTH=800, M_HEIGHT=450;
 var app, game_res, game, objects={}, state='', game_tick=0, my_turn=false, git_src='',some_process = {},  game_platform='',is_listening=false,say=false;
-const letters=['Б','В','Г','Д','Ж','З','К','Л','М','Н','П','Р','С','Т','Ф'];
-const words={'Б':['БАБУШКА УБРАЛАСЬ В ИЗБУШКЕ','РАЗБУДИЛИ БУЛЬДОГА В БУДКЕ','В БОЛЬШОМ БАКЕ БАКТЕРИИ','ЗАБАВНЫЙ БАРАБАНЩИК БЫСТРО УБЕЖАЛ','В БУТЫЛКЕ БУЛЬКАЛ БУЛЬОН','БАЛЕРИНА БЫЛА НА БАЛУ','БОТИНКИ БЫСТРО НАМОКЛИ','АВТОБУС ОБОГНАЛ БУЛЬДОЗЕР','В БУТЫЛКЕ БЫЛ ЦЕЛЕБНЫЙ БАЛЬЗАМ','БАБУШКА ЗАБОТИТСЯ И БАЛУЕТ ВНУКОВ','БОЛЬШОЙ БАНАН','БАБОЧКА НА БАЛКОНЕ','ОБОРОНА БАШНИ','БОЛЬШОЙ БУЛЫЖНИК','БЫВШИЙ БАРАБАНЩИК','БУМЕРАНГ АБОРИГЕНА','БУМАЖНИК БАНКИРА','РЫБЫ В БАНКЕ','БОЛЬШОЙ БАНТ','ГОЛУБОЙ БАНТ'],'В':['ВОЗДУШНАЯ ВАТА','ВОЛК С КОРОВОЙ','ВКУСНАЯ ВЫПЕЧКА','ВЫГОДНЫЙ ВАРИАНТ','ВОКЗАЛ ДЛЯ ДВОИХ','ВОДОЛАЗ ПОД ВОДОЙ','ВОДИТЕЛЬ ТРАМВАЯ','ВОЛШЕБНЫЕ СЛОВА','ВЫПУСКНИК ВОЛНОВАЛСЯ','ВЫЛЕПИТЬ СНЕГОВИКА','ВОТ ВАМ СЛАДКОВАТАЯ ВОДА','ВОРОНА ВОВРЕМЯ УВЕРНУЛАСЬ ОТ ВАЛУНА','НА ВОРОТАХ ВОСЕМЬ ВОРОН','У КОРОВЫ НЕТ ГРИВЫ','ВАХТОВЫЙ АВТОБУС ВОЗИТ ВОЖАТЫХ','ВРУН ВРАЛ ВСЕМ ВОКРУГ','ВОРОН ВЫСОКО ВЗЛЕТЕЛ','ДВОЙНАЯ ВЫГОДА','ВОЛЬНЫЙ ВОИН','ТВОРОЖНЫЕ ВАРЕНИКИ'],'Г':['ГОРОДСКАЯ ГАЗЕТА','ГАЛСТУК В ГОРОШЕК','ГАЛКА НА ГАЗОНЕ','ГОРОД В ГОРАХ','ГРОМКИЙ ГОЛОС','ГОСТИ В ВАГОНЕ','ГОТОВИТЬ ГОВЯДИНУ','ДОГОНЯТЬ ПИНГВИНОВ','ГОЛОДНЫЕ ГОБЛИНЫ','ГОРБАТЫЙ ГНОМ ГОРЬКО ГОРЕВАЛ','ГЕНЕРАЛ ВОЗГЛАВИЛ ГВАРДИЮ','ГОНЩИК ГОТОВ К ГОНКАМ','ФОТОГРАФ ДОГОНЯЛ ПИНГВИНОВ','ОГОНЬ НА БЕРЕГУ ПУГАЛ ПОПУГАЕВ','ЭТА ГРУША ГНИЛАЯ','ГОТОВАЯ ИГРУШКА','ГЛАВНЫЙ  ГОСПИТАЛЬ','ГОРСТКА ГЛИНЫ','ТРОГАТЬ БУМАГУ','ОТГАДАТЬ ГОЛОВОЛОМКУ'],'Д':['У ДВОРНИКА ВЫХОДНОЙ','ДАВНИЙ ДОЛГ','ДАЧА ХУДОЖНИКА','ДАЛЬНЯЯ ДОРОГА','ДОМ В САДУ','НОВОГОДНИЙ ПРАЗДНИК','ХУДОЕ ЧУДОВИЩЕ','ДОЛГИЙ ДОЖДЬ','ОГОРОДЫ ЗА ГОРОДОМ','ДЫХАНИЕ ДРАКОНА','ДОЖДЛИВАЯ ПОГОДА','ДАЛЬНЯЯ ДОРОГА В ДЮНАХ','ВОДОЛАЗ ДОСТАЛ СО ДНА МЕДУЗУ','ДОКТОР ДОТРОНУЛСЯ ДО БЕДРА','ДАЧА ДЕДУШКИ ДАЛЕКО ОТ ГОРОДА','ДОЛГИЙ ДОЖДЬ ВСЕМ НАДОЕЛ','ЛЕДОКОЛ ДАЛЕКО ВО ЛЬДАХ','ЧУДАК ПОДНЯЛСЯ НА ЧЕРДАК','ТЫ ДОЛЖЕН ДОЙТИ ДО ДАЛЬНЕГО ГОРОДА','ПОБЕДА ДОСТАЛАСЬ ДВУМ КОМАНДАМ'],'Ж':['ЖАБА В ЛУЖЕ','ЖАДНЫЙ ЖАДИНА','ТЯЖЕЛАЯ БАРЖА','РЖАНИЕ ЖЕРЕБЕНКА','ЖУЖЖАНИЕ ЖУКА','КОЖАНЫЙ ЖАКЕТ','ЖЕЛАНИЕ ЖИТЬ','НЕЖНАЯ КОЖА','БУМАЖНЫЙ ЖУК','КОЖА ЖИРАФА','БЛИЖЕ К МЕДВЕЖОНКУ','ЖЕВАТЬ ЖЕЛЕ','ЖИЛЕТКА МУЖА','УЖ НЕ МОЖЕТ УЖАЛИТЬ','Я ЖУЮ ЖИДКОЕ МОРОЖЕНОЕ','МОЯ ЖАЛКАЯ НАДЕЖДА НА ЖИЛЬЕ','Я ЖУЮ ЖВАЧКУ','ПОЖАРНИК БЕЖИТ НА ПОЖАР','ЖУК ПОД ОРАНЖЕВЫМ АБАЖУРОМ','ЖАЛКИЙ ЖРЕБИЙ МОЙ'],'З':['ЗАПРЕТНАЯ ЗОНА','НА ЗАВОДЕ ЗАБАСТОВКА','ЗНАНИЕ ЯЗЫКА','ЗАБОТА О ЗДОРОВЬЕ','ЗОРКИЕ ГЛАЗА','ИЗБЫТОК АЗОТА','ПРИЗНАК ГРОЗЫ','ЗАМОК НА ЗАБОРЕ','ЗНАКОМАЯ МУЗЫКА','ЗОЛОТАЯ КАЗНА','БЕЗУМНАЯ ЗАТЕЯ','Я ЗАЕХАЛ НА ЗАВОД','Я ЗАКРЫЛ ГЛАЗА','ГРУЗОВИК С АРБУЗАМИ','ЗВЕНИТ ЗВОНКИЙ ЗВОНОК','МЫ НЕ ЗНАЛИ НАЗВАНИЯ ГРУЗА','КОЗА ЗАБЕЖАЛА В ПОЕЗД','ДЕД МОРОЗ ЗАГАДАЛ ЗАГАДКУ','В ЗООПАРК ПРИВЕЗЛИ ЗУБРА','Я ОПОЗДАЛА НА ЗАНЯТИЯ'],'К':['КАБЕЛЬНЫЙ  КАНАЛ','ТОНКАЯ КАЛЬКА','НЕСКОЛЬКО КУСКОВ','КАНДИДАТ НАУК','ИСКАТЬ КОНФЕТЫ','ВКУСНЫЙ КОФЕ','КУСОК КАБАЧКА','ВЫСКОЧИЛ НА КАМЕНЬ','ЗАКРЫТАЯ КАЛИТКА','КОЛОДА КАРТ','ОСКАЛ ВОЛКА','ЗАКОНЧИЛСЯ КЛЮЧЕВОЙ КАДР','КАНАРЕЙКА В КЛЕТКЕ СКУЧАЕТ','СКАЛОЛАЗ СПУСКАЛСЯ СО СКАЛ','КОШКА ЛАКАЛА МОЛОКО','В КУВШИНЕ КОЗЬЕ МОЛОКО','НА СУКУ КУКУЕТ КУКУШКА','КАПИТАН КУПИЛ КУРТКУ','МЯУКАЕТ МОКРАЯ КОШКА','КОМАНДИР КОМАНДУЕТ'],'Л':['БЕЛЫЙ ЛАНДЫШ','БЕЛЫЙ ГОЛУБЬ','ГЛАДКАЯ ЛАВОЧКА','ЛАСКОВЫЕ ЛАДОШКИ','МИЛАЯ УЛЫБКА','ЛАПКА БЕЛКИ','ЛАТЫ ИЗ ЛАТУНИ','ЛОМКИЙ ВОЛОС','КОЛКАЯ ИГОЛОЧКА','СПЕЛОЕ СЛАДКОЕ ЯБЛОКО','ЛУЧ СОЛНЦА','БЕЛОЕ ПЛАТЬЕ','ЛАМПА УПАЛА НА ПОЛ','МАЛЫШ ИГРАЛ В ЛОТО','У ПЛОТНИКА В ЛАДОНЯХ ЛОБЗИК','ПЛАМЯ ОХВАТИЛО ВЕСЬ ПЛОТ','ЛАЯЛА ЛОХМАТАЯ ЛАЙКА','БЕЛАЯ АКУЛА ИСПУГАЛА АКВАЛАНГИСТА','ОКОЛО ДОМА ЛАЯЛ ПЕС','ПО ВОЛНАМ ПЛЫЛ ПЛОТ'],'М':['МАЛО МАКУЛАТУРЫ','МАЛЫШ МОЛЧИТ','МАГИСТР МАГИИ','МОЕЧНАЯ МАШИНА','МАЛЕНЬКИЙ МАНДАРИН','МОЛОЧНОЕ МОРОЖЕНОЕ','МОЛОДАЯ МАЧЕХА','МОТОР МОПЕДА','МАСКАРАДНАЯ МАСКА','МАССОВЫЙ МАРШ','У ДАМЫ ПАНАМА ИЗ СОЛОМЫ','МАМА МАКНУЛА МАЛИНУ В МОЛОКО','МАМА МОЕТ РАМУ','МАТРОС ЛОМАЕТ ЗАМОК','В ЗАМКЕ МНОГО МРАМОРА','МАМА МОЕТ МЛАДЕНЦА','МЫ ЛЮБИМ МОЛОЧНОЕ МОРОЖЕНОЕ','МАМА СМОТРИТ МУЛЬТФИЛЬМЫ','МЫ НЕ ЛЮБИМ ТОМАТНОЕ МОРОЖЕНОЕ','МОЛОДОЙ МУЖЧИНА'],'Н':['ВКУСНЫЙ АНАНАС','БАНАН НАРЕЗАН','НАЙТИ НАЖИВКУ','НОЧНАЯ СМЕНА','НАША НОША','МОНОТОННЫЙ ЗВОН','НАКОЛКА НА СПИНЕ','ЕДИНЫЙ ЭКЗАМЕН','ЦЫГАНКА НАГАДАЛА НОВУЮ КОМНАТУ','НАЧАЛОСЬ НАГНОЕНИЕ МИЗИНЦА','ТЕЛЕФОН ОТКЛЮЧЕН ЗА НЕУПЛАТУ','НАСТЯ НАРАСТИЛА РЕСНИЦЫ','НА ДЫНЕ СДЕЛАН НАДРЕЗ','НУЖНО СРОЧНО НАЛАДИТЬ ОТНОШЕНИЯ','ЮНОШУ НАГРАДИЛИ НОВЫМ НОУТБУКОМ','СТАРИННЫЕ МАНУСКРИПТЫ','ЗАБАВНАЯ ОБЕЗЬЯНА','НА КОНЧИКЕ НОЖА','НАСТОЯЩЕЕ КИМОНО','НОВЫЙ НАЛОГ'],'П':['ПОЛНЫЙ ПОДГУЗНИК','ПАСПОРТ ПАРНЯ','ПОЛОСАТЫЙ ПЛАТОК','СПУСК СПРАВА','ПАССАЖИР ПОЕЗДА','НАКАПАТЬ КАПЛИ','ПАНТЕРА ПРЫГАЕТ','ПОДМОГА ПОДОСПЕЛА','ОПАСНЫЙ СНЕГОПАД','ПАРТИЯ  ПАРОВОЗОВ','ОПУХШИЙ ПАЛЕЦ','ПОБЫТЬ СПУТНИКОМ','ПОМЫТЬ ПОЛ','ПУЗАТЫЙ НЕПОСЕДА','ПОПУГАЙ ПРОСТО ПОВТОРЯЕТ ЧУЖИЕ СЛОВА','ПЛАВАНИЕ ПОЗВОЛЯЕТ УВЕЛИЧИТЬ ПЛЕЧИ','ПАНТЕРА ПЛАВНО ПРЫГАЕТ ПО ПОЛУ','ПАПА ОТПРАВИЛ ПО ПОЧТЕ ПОСЫЛКУ','НА ПРИЧАЛЕ ОТДЫХАЕТ ПОЛНЫЙ КАПИТАН','ПОРОСЯТА ПОВИЗГИВАЛИ И ПРЫГАЛИ НА ПОЛЯНЕ'],'Р':['КРАСНЫЙ РАК','РАКЕТА РАЗОГНАЛАСЬ','СТАРАЯ РАМА','КРУТЫЕ РОГА','ПЕРВАЯ ГРУППА','ТРУДНЫЕ РОДЫ','ПРАЗДНИК ДЛЯ ДЕТВОРЫ','ПРОВАЛ ПРОЕКТА','ГРОЗА ГРОХОТАЛА','РАЗВИЛКА НАПРАВО','ПРОГНОЗ НА ЗАВТРА','БУЛЬВАР РОЗ','ПРОГУЛКА ПО ПАРКУ','РОДИНКА НА РУКЕ','ПИРАТ ЗАРЫВАЕТ СОКРОВИЩА НА ОСТРОВЕ','НА ФОТОГРАФИИ МОИ ДРУЗЬЯ','ПРОВЕДЕНА ОПЕРАЦИЯ','УРОДИЛСЯ ХОРОШИЙ УРОЖАЙ','С УТРА МЫ БРОДИМ ПО СТАРОМУ ГОРОДУ','РАСЧЕТ КОНСТРУКЦИИ ПРОВЕДЕН АРХИТЕКТОРОМ ВЕРНО'],'С':['САМИ С УСАМИ','СОЛИСТ АНСАМБЛЯ','УСАТЫЙ СОМ','СМОТРЕЛА НА СОРОКУ','СЫТНЫЙ СЫРНИК','СТАРАЯ СУМКА','СЛИВОВЫЙ САД','САМОДЕЛЬНЫЙ САМОКАТ','СВЕТЛАЯ САЛФЕТКА','СОДА В СТАКАНЕ','СОЧИНИТЬ СКАЗКУ','ПОЛОСАТАЯ СОБАКА','СТЫДНО ПЕРЕД СОСЕДЯМИ','Я ПОСАДИЛА САЛАТ И СВЕКЛУ','ТРАВА СОХНЕТ НА СОЛНЦЕ','СТРОГАЯ СУПРУГА СУПЕРМЕНА','С НАМИ В ЛЕСУ БЫЛА СОБА­КА','СОБАКА СМОТРЕЛА НА СОРОКУ','В ЛЕСУ РАСТУТ ВЫСОКИЕ СОСНЫ','САМОЛЕТ ЛЕТИТ ВЫСОКО НАД ЛЕСОМ'],'Т':['ТУРЕЦКИЙ ТАБАК','ПИСТОЛЕТ','ТОЛСТАЯ ТОРПЕДА','ТОНКАЯ ТАЛИЯ','ВТОРОЙ МАТРОС','АТЛЕТ БЕЖИТ','СТАРАЯ ТАВЕРНА','ИНСТРУМЕНТЫ ПЛОТНИКА','ШУСТРЫЙ ЛИЛИПУТ','ПОЧЕТНАЯ ГРАМОТА','КОРОТКАЯ ЛЕНТА','ТОВАРИЩ НА ТАБУРЕТКЕ','ТРЕНЕР ТРЕБУЕТ ТОРОПИТЬСЯ','ТРАМВАЙ ТРОНУЛСЯ БЫСТРО','УТРОМ ВСТАВАТЬ ТРУДНО','ТОЛПА ТОЛКАЕТСЯ В ТОННЕЛЕ','ТАНКИСТ СПИТ ПОД ТАНКОМ','','ТАМАДА ГОВОРИТ КОРОТКИЙ ТОСТ','ТАЛАНТЛИВЫЙ ТАКТИК ЧИТАЕТ МАРШРУТ'],'Ф':['ФАБРИКАНТ НА ФАБРИКЕ','ФАМИЛИЯ ФАНАТА','ФАРАОН В СКАФАНДРЕ','ФУТБОЛЬНЫЙ ФАНАТ','НА ФОТО ЖИРАФЫ','ФАРА АВТОБУСА','ФАСОВАТЬ ФАСОЛЬ','ФОТО АФРИКАНКИ','КОМФОРТНЫЙ ШАРФ','КОСМОНАВТ В СКАФАНДРЕ','ФУТЛЯР ОТ САКСОФОНА','ФУРГОН С ФРУКТАМИ','ФЕХТОВАЛЬЩИК В ФОРМЕ','НОВАЯ ФРАЗА О ФРУКТАХ','У ФАРТУКА ФИОЛЕТОВЫЙ ФОН','ИНТЕРЕСНАЯ ИНФОРМАЦИЯ','ПЕРЕД ФАСАДОМ ПОСАДИЛИ ТРАВКУ','В ТЕСТО ПОЛОЖИЛИ ФУНДУК','ФАСОВЩИК ФАСУЕТ КОНФЕТЫ В ФАНТИКАХ','НАШИ ФЛОРА И ФАУНА ФАНТАСТИЧЕСКИ РАЗНООБРАЗНЫ']}
-
-class letter_class extends PIXI.Container{
-	
-	constructor(letter) {
-		super();
-		this.letter=letter;
-		
-		this.bcg=new PIXI.Sprite(gres.letter_bcg.texture);
-		this.bcg.interactive=true;
-		this.bcg.buttonMode=true;
-		this.bcg.pointerdown=main_menu.button_down.bind(main_menu,this.letter);
-		this.bcg.pointerover=function(){this.bcg.alpha=0.5;}.bind(this);
-		this.bcg.pointerout=function(){this.bcg.alpha=1;}.bind(this);
-		this.bcg.width = 150;
-		this.bcg.height = 80;
-		
-		this.ltext="";
-		this.ltext=new PIXI.BitmapText('...', {fontName: 'mfont',fontSize: 50});
-		this.ltext.anchor.set(0.5,0.5);
-		this.ltext.x=75;
-		this.ltext.y=40;
-		this.ltext.tint=0x000000;
-		this.ltext.text=letter;
-		
-		this.addChild(this.bcg,this.ltext);
-		
-	}
-	
-	
-	
-}
+const words=[
+'буханка из буфета набухла',
+'люба в бочку бросила бабочку',
+'балерина была на балу',
+'я буду работать булочником',
+'бабушка заботится и балует внуков',
+'тыкву вкусную сварили',
+'на воротах восемь ворон',
+'корова взмахнула хвостом',
+'в городе много магазинов',
+'огонь на берегу пугал попугаев',
+'доктор дотронулся до бедра',
+'жук жужжит в железной банке',
+'моя жалкая надежда на жилье',
+'живем да хлеб жуем',
+'победа досталась двум командам',
+'водолаз дышит кислородом',
+'классная косметика в косметичке',
+'кошка лакала молоко',
+'капитан купил куртку',
+'лось попал в ловушку',
+'пилот надел пилотку',
+'с яблони упало спелое яблоко',
+'лошадка поскакала на луг',
+'поросята прыгали на поляне',
+'пуля попала в пустоту',
+'папа отправил по почте посылку',
+'доброе утро татарстан',
+'с утра мы бродим по старому городу',
+'собака смотрела на сороку',
+'сахар насыпали в стакан',
+'талантливый тактик читает маршрут',
+'утром вставать трудно',
+'крот роет тоннель',
+'так только космонавты кушают',
+'хвала хорошему хозяину',
+'я хочу махровый халат'
+]
 
 irnd = function (min,max) {	
     min = Math.ceil(min);
@@ -124,7 +129,7 @@ anim2 = {
 	},
 	
 	ease2back : function(x) {
-		return Math.sin(x*Math.PI);
+		return Math.sin(x*Math.PI*2);
 	},
 	
 	easeInOutCubic: function(x) {
@@ -263,225 +268,48 @@ sound = {
 	
 }
 
+
 var synth = window.speechSynthesis;
 
-var utterance = new SpeechSynthesisUtterance();
-utterance.lang = 'ru-Ru';
-utterance.rate = 1.25;
+alert("Voces: "+synth.getVoices().length)
 
-const SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition;
-var recognizer = new SpeechRecognition;
-recognizer.interimResults=true;
+
+var SpeechSynthesisUtterance = window.webkitSpeechSynthesisUtterance||window.mozSpeechSynthesisUtterance ||window.msSpeechSynthesisUtterance||window.oSpeechSynthesisUtterance||window.SpeechSynthesisUtterance;
+var speech=new SpeechSynthesisUtterance();
+speech.lang = 'ru-Ru';
+speech.rate = 1.25;
+
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+
+var recognizer = new SpeechRecognition();
 recognizer.lang = 'ru-Ru';
-
-main_menu={
-	
-	activate(){
-				
-
-		navigator.mediaDevices.getUserMedia({ audio: true })
-		.then(function(stream) {
-			alert('You let me use your mic!')
-		})
-		.catch(function(err) {
-			alert('No mic for you!'+err)
-		});
-		
-		
-		objects.main_menu_header.visible=true;
-		objects.letter_buttons.forEach(l=>l.visible=true);
-		
-	},
-	
-	close(){
-		
-		objects.main_menu_header.visible=false;
-		objects.letter_buttons.forEach(l=>l.visible=false);
-		
-	},
-	
-	button_down(letter){
-		
-		this.close();
-		game.activate(letter);
-		
-	}
-	
-}
 
 game={
 	
 	cur_word_index:0,
-	cor_word_cnt:0,
-	words:[],
-	present_count:0,
-	stable:true,
 	
-	complete_perc:0,
-	
-	activate: function(letter) {
-		this.words=words[letter];
-		objects.word.text=this.words[this.cur_word_index];
+	activate: function(role, opponent) {
+		
+		objects.word.text=words[this.cur_word_index]
 
-		objects.sun_rays.visible=false;
-		this.cur_word_index=0;
-		this.cor_word_cnt=0;
-		
-		anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
-		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
-		objects.ss_bcg.visible=true;
-		objects.ss_front.visible=true;
-		anim2.add(objects.progress_cont,{alpha:[0,1]},true,1,'linear');
-		this.complete_perc=0;
-		objects.progress_bar.width=0;
-		some_process.game=this.process;
-		
-		
-		objects.present0.visible=false;
-		objects.present1.visible=false;
-		objects.present2.visible=false;
-		
-		objects.progress_present0.visible=true;
-		objects.progress_present1.visible=true;
-		objects.progress_present2.visible=true;
-		
-		
-		
 	},
 	
-	close(){
+	prv_word_down:function(){
 		
-		objects.present0.visible=false;
-		objects.present1.visible=false;
-		objects.present2.visible=false;
-		
-		objects.main_data.visible=false;
-		objects.back_button.visible=false;
-		objects.ss_bcg.visible=false;
-		objects.ss_front.visible=false;
-		objects.progress_cont.visible=false;
-		some_process.game=this.process;
-		
+		this.cur_word_index--;
+		this.cur_word_index<0&&(this.cur_word_index=0);
+		objects.word.text=words[this.cur_word_index];	
+		objects.word_result.text='';
+		sound.play('click');
 	},
 	
-	process(){
-		if(is_listening)
-			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
-	},
-	
-	back_down(){
+	next_word_down:function(){
 		
-		if(is_listening || anim2.any_on() || !this.stable){
-			
-			return;
-		}
-		
-		this.close();
-		main_menu.activate();
-		
-		
-	},
-	
-	wrong_answer:function(){			
-		
-		this.cor_word_cnt--;	
-		if(this.cor_word_cnt<0) this.cor_word_cnt=0;
-		this.complete_perc=this.cor_word_cnt/19;
-		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
-		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
-		
-		sound.play('click');		
-		objects.start_button.alpha=1;
-		objects.start_button.texture=gres.incorrect_img.texture;
-		anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
-		this.next_word();
-		
-	},
-	
-	async add_present(present_id){
-		
-		
-
-		const loader=new PIXI.Loader();		
-		await new Promise(function(resolve, reject) {			
-			loader.add('present_img', git_src+'/presents/'+irnd(0,53)+'.png',{loadType: PIXI.LoaderResource.LOAD_TYPE.IMAGE, timeout: 3000});						
-			loader.load(function(l,r) {	resolve(l) });
-		});
-		
-		
-		const obj=objects['present'+present_id];
-		obj.texture=gres.present.texture;
-		await anim2.add(obj,{y:[-200,obj.sy]},true,3,'easeOutBounce');		
-		await new Promise((resolve, reject) => setTimeout(resolve, 1000));
-		sound.play('present_sound');
-		obj.texture=loader.resources.present_img.texture;
-	},
-	
-	correct_answer:function(){
-		
-		
-
-		this.show_sun_rays();
-		this.cor_word_cnt++;	
-		this.complete_perc=this.cor_word_cnt/19;
-		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
-		
-		
-		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
-		
-		if(this.cor_word_cnt===10 && objects.present0.visible===false && objects.progress_present0.visible===true){
-			objects.progress_present0.visible=false;
-			this.add_present(0);
-		}
-		if(this.cor_word_cnt===14 && objects.present1.visible===false && objects.progress_present1.visible===true){
-			objects.progress_present1.visible=false;
-			this.add_present(1);
-		}
-		if(this.cor_word_cnt===19 && objects.present2.visible===false && objects.progress_present2.visible===true){
-			objects.progress_present2.visible=false;
-			this.add_present(2);
-		}
-		
-		
-		sound.play('click');		
-		objects.start_button.alpha=1;
-		
-		anim2.add(objects.start_button,{rotation:[0,0.5],scale_xy:[0.666,1]},true,1,'ease2back');
-		objects.start_button.texture=gres.correct_img.texture;
-		this.next_word();
-	},
-	
-	async show_sun_rays(){
-		
-		some_process.rotate_sun_rays=function(){objects.sun_rays.rotation+=0.05};
-		await anim2.add(objects.sun_rays,{alpha:[0, 0.5],scale_xy:[1,2]},true,2,'linear');
-		await anim2.add(objects.sun_rays,{alpha:[0.5, 0],scale_xy:[2,1]},false,2,'linear');
-		some_process.rotate_sun_rays=function(){};
-	},
-	
-	next_word:async function(){
-		
-		this.stable=false;
-		objects.start_button.tint=objects.start_button.base_tint;
-		
-		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
-				
 		this.cur_word_index++;
-		this.cur_word_index=this.cur_word_index%this.words.length;
-		
-		await anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},true,0.5,'easeInBack');
-		
-		objects.word.text=this.words[this.cur_word_index];					
-		objects.word_result.text='';	
-		objects.start_button.texture=gres.start_button.texture;
-		
-		await anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
-				
-		objects.start_button.interactive=true;
-		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
-		
-		this.stable=true;
-		
+		this.cur_word_index>(words.length-1)&&(this.cur_word_index=words.length-1);
+		objects.word.text=words[this.cur_word_index];	
+		objects.word_result.text='';
+		sound.play('click');
 	},
 	
 	start_down:function(){
@@ -492,10 +320,8 @@ game={
 			return;			
 		}
 		
-		anim2.add(objects.back_button,{x:[objects.back_button.x,-100]},false,0.5,'easeInBack');
-		objects.start_button.interactive=false;
 		is_listening=true;
-		objects.start_button.texture=gres.mic.texture;
+		
 		
 		sound.play('click');
 		
@@ -523,9 +349,9 @@ game={
 	say_word:async function (word) {
 		
 		await new Promise(function(resolve, reject){	  
-			utterance.text = word;
-			synth.speak(utterance); 
-			utterance.onend = resolve;
+			speech.text = word;
+			synth.speak(speech); 
+			speech.onend = resolve;
 		});	
 		
 	},
@@ -540,13 +366,13 @@ game={
 		await new Promise(function(resolve, reject){
 
 			recognizer.start();
-			
 			recognizer.onresult = function (event) {
 			  
+			  console.log("onresult")
 			  var result = event.results[event.resultIndex];
-			  objects.word_result.text=result[0].transcript.toUpperCase();
 			  if (result.isFinal) {
-				  final_word = result[0].transcript.toUpperCase()
+				  final_word = result[0].transcript;
+				  final_word = final_word.toLowerCase();
 				  resolve();
 			  }
 			};	
@@ -570,20 +396,14 @@ game={
 		  
 		});
 		
-		final_word=final_word.replace('Ё','Е');
-		
-		is_listening=false;		
-		objects.word_result.text=final_word;		
 		if(objects.word.text===final_word){
 			sound.play('win');
-			this.correct_answer();
 		}else{
-			this.wrong_answer();
 			sound.play('lose');	
 		}
 		
-
-
+		objects.word_result.text=final_word;
+		is_listening=false;
 
 	}
 
@@ -833,7 +653,7 @@ async function load_resources() {
 	document.getElementById("m_progress").style.display = 'flex';
 
 	git_src="https://akukamil.github.io/logoped/"
-	//git_src=""
+	git_src=""
 
 	//подпапка с ресурсами
 	let lang_pack = 'RUS';
@@ -846,7 +666,6 @@ async function load_resources() {
 	game_res.add('locked',git_src+'sounds/locked.mp3');
 	game_res.add('win',git_src+'sounds/win.mp3');
 	game_res.add('lose',git_src+'sounds/lose.mp3');
-	game_res.add('present_sound',git_src+'sounds/present.mp3');
 	
     //добавляем из листа загрузки
     for (var i = 0; i < load_list.length; i++)
@@ -991,7 +810,7 @@ async function init_game_env(lang) {
 	main_loop();	
 		
 	//показыаем основное меню
-	main_menu.activate();
+	game.activate();
 	
 	console.clear()
 
