@@ -939,8 +939,14 @@ async function init_game_env(lang) {
 
 	let data=await EasySpeech.detect();	
 	let res=await EasySpeech.init({ maxTimeout: 5000, interval: 250 });
-	const voices = EasySpeech.voices()
-	alert("Voices: "+voices.length)
+	const all_voices = EasySpeech.voices()
+	alert("All Voices: "+all_voices.length)
+	
+	var newArray = all_voices.filter(function (el) {
+	  return el.lang === 'ru-RU'
+	});
+	
+	alert("Ru Voices: "+newArray.length)
 	
 	resize();
 	window.addEventListener("resize", resize);
