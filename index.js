@@ -271,11 +271,17 @@ sound = {
 
 var synth = window.speechSynthesis;
 
-var utterance = new SpeechSynthesisUtterance();
-utterance.lang = 'ru-Ru';
-utterance.rate = 1.25;
+alert("Voces: "+synth.getVoices().length)
 
-var recognizer = new webkitSpeechRecognition();
+
+var SpeechSynthesisUtterance = window.webkitSpeechSynthesisUtterance||window.mozSpeechSynthesisUtterance ||window.msSpeechSynthesisUtterance||window.oSpeechSynthesisUtterance||window.SpeechSynthesisUtterance;
+var speech=new SpeechSynthesisUtterance();
+speech.lang = 'ru-Ru';
+speech.rate = 1.25;
+
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+
+var recognizer = new SpeechRecognition();
 recognizer.lang = 'ru-Ru';
 
 game={
@@ -341,11 +347,11 @@ game={
 	},
 	
 	say_word:async function (word) {
-		
+		synth.cancel();
 		await new Promise(function(resolve, reject){	  
-			utterance.text = word;
-			synth.speak(utterance); 
-			utterance.onend = resolve;
+			speech.text = word;
+			synth.speak(speech); 
+			speech.onend = resolve;
 		});	
 		
 	},
