@@ -263,6 +263,7 @@ sound = {
 	
 }
 
+/*
 var synth = window.speechSynthesis;
 
 alert("Voces: "+synth.getVoices().length)
@@ -276,21 +277,11 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 
 var recognizer = new SpeechRecognition();
 recognizer.lang = 'ru-Ru';
-
+*/
 
 main_menu={
 	
-	activate(){
-				
-
-		navigator.mediaDevices.getUserMedia({ audio: true })
-		.then(function(stream) {
-			alert('You let me use your mic!')
-		})
-		.catch(function(err) {
-			alert('No mic for you!'+err)
-		});
-		
+	activate(){			
 		
 		objects.main_menu_header.visible=true;
 		objects.letter_buttons.forEach(l=>l.visible=true);
@@ -313,6 +304,11 @@ main_menu={
 	
 }
 
+
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+var recognizer = new SpeechRecognition();
+recognizer.lang = 'ru-Ru';
+
 game={
 	
 	cur_word_index:0,
@@ -323,7 +319,12 @@ game={
 	
 	complete_perc:0,
 	
-	activate: function(letter) {
+	activate: async function(letter) {
+		
+		
+			
+
+		
 		this.words=words[letter];
 		objects.word.text=this.words[this.cur_word_index];
 
@@ -526,11 +527,16 @@ game={
 	
 	say_word:async function (word) {
 		
-		await new Promise(function(resolve, reject){	  
-			speech.text = word;
-			synth.speak(speech); 
-			speech.onend = resolve;
-		});	
+		
+		await EasySpeech.speak({
+		  text: word,
+		  voice: undefined, // optional, will use a default or fallback
+		  pitch: 1,
+		  rate: 1,
+		  volume: 1,
+		  // there are more events, see the API for supported events
+		  boundary: e => console.debug('boundary reached')
+		})	
 		
 	},
 	
@@ -931,6 +937,11 @@ async function init_game_env(lang) {
 	app = new PIXI.Application({width:M_WIDTH, height:M_HEIGHT,antialias:false,backgroundColor : 0x404040});
 	document.body.appendChild(app.view);
 
+	let data=await EasySpeech.detect();	
+	let res=await EasySpeech.init({ maxTimeout: 5000, interval: 250 });
+	const voices = EasySpeech.voices()
+	alert("Voices: "+voices.length)
+	
 	resize();
 	window.addEventListener("resize", resize);
 
