@@ -542,13 +542,13 @@ game={
 		if(say) await this.say_word('скажи '+objects.word.text);	
 		objects.word_result.text='Говори...';
 		
+		recognizer.abort();
+		recognizer.stop();
+		recognizer.start();		
+		
 		let final_word ="";
 		await new Promise(function(resolve, reject){
 
-			recognizer.abort();
-			recognizer.stop();
-			recognizer.start();
-			
 			recognizer.onresult = function (event) {
 			  
 			  var result = event.results[event.resultIndex];
