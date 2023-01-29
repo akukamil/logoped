@@ -929,8 +929,16 @@ async function load_speech_stuff(){
 	//await new Promise((resolve, reject) => setTimeout(resolve, 2000));
 	synth=window.speechSynthesis;
 	if(!synth) alert("no synth");
+	console.log("synth loaded")
 			
-	await new Promise((resolve, reject) => synth.onvoiceschanged=resolve);
+	await new Promise((resolve, reject) => {
+		if (synth.getVoices().length > 0) {
+		  resolve();
+		} else {
+		  synth.onvoiceschanged = resolve;
+		}
+	});
+	console.log("voices loaded")
 		
 	all_voices=await synth.getVoices();
 	alert("all_voices: "+all_voices.length);
