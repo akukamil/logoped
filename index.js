@@ -347,7 +347,7 @@ game={
 	},
 	
 	say_word:async function (word) {
-		
+		synth.cancel();
 		await new Promise(function(resolve, reject){	  
 			speech.text = word;
 			synth.speak(speech); 
