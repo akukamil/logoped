@@ -336,21 +336,14 @@ game={
 		
 		anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
 		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
+		anim2.add(objects.car_cont,{y:[600,objects.car_cont.sy]},true,1,'easeOutBack');
+		
 		objects.ss_bcg.visible=true;
 		objects.ss_front.visible=true;
-		anim2.add(objects.progress_cont,{alpha:[0,1]},true,1,'linear');
 		this.complete_perc=0;
-		objects.progress_bar.width=0;
 		some_process.game=this.process;
 		
 		
-		objects.present0.visible=false;
-		objects.present1.visible=false;
-		objects.present2.visible=false;
-		
-		objects.progress_present0.visible=true;
-		objects.progress_present1.visible=true;
-		objects.progress_present2.visible=true;
 		
 		
 		
@@ -389,19 +382,42 @@ game={
 		
 	},
 	
+	async move_car(){
+		
+		some_process.car_move=function(){			
+			objects.progress_present0.x-=0.5;
+			objects.bcg.tilePosition.x -= 0.25;
+			objects.road.tilePosition.x -= 0.5;
+			objects.wheel0.rotation+=0.1;
+			objects.wheel1.rotation+=0.1;
+			objects.car.rotation=Math.sin(objects.car.traveled*3)*0.05;
+			objects.car.y=objects.car.sy-Math.sin(objects.car.traveled*3)*3;		
+			objects.car.traveled+=0.02;			
+		}
+		
+		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+				
+		some_process.car_move=function(){};
+		
+		await anim2.add(objects.car,{rotation:[objects.car.rotation,0],y:[objects.car.y,objects.car.sy]},true,1.5,'easeOutBack');
+		
+		objects.car.traveled=0;
+		
+		
+	},
+	
 	wrong_answer:function(){			
 		
 		this.cor_word_cnt--;	
 		if(this.cor_word_cnt<0) this.cor_word_cnt=0;
 		this.complete_perc=this.cor_word_cnt/19;
-		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
-		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
 		
 		sound.play('click');		
 		objects.start_button.alpha=1;
 		objects.start_button.texture=gres.incorrect_img.texture;
 		anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
 		this.next_word();
+		
 		
 	},
 	
@@ -425,9 +441,8 @@ game={
 	},
 	
 	correct_answer:function(){
-		
-		
-
+			
+		this.move_car();
 		this.show_sun_rays();
 		this.cor_word_cnt++;	
 		this.complete_perc=this.cor_word_cnt/19;
@@ -942,13 +957,13 @@ async function load_speech_stuff(){
 	console.log("voices loaded")
 		
 	all_voices=await synth.getVoices();
-	alert("all_voices: "+all_voices.length);
+	console.log("all_voices: "+all_voices.length);
 	
 	ru_voices = all_voices.filter(function (el) {
 	  return ['ru-RU','ru_RU'].includes(el.lang)
 	});
 			
-	alert("ru_voices: "+ru_voices.length);
+	console.log("ru_voices: "+ru_voices.length);
 		
 	utterance=new SpeechSynthesisUtterance();
 	
@@ -1038,7 +1053,7 @@ async function init_game_env(lang) {
 
 function main_loop() {
 
-
+	
 	game_tick+=0.016666666;
 	
 	//обрабатываем минипроцессы
@@ -1049,4 +1064,3 @@ function main_loop() {
 
 	requestAnimationFrame(main_loop);
 }
-
