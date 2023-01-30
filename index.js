@@ -445,26 +445,8 @@ game={
 		this.move_car();
 		this.show_sun_rays();
 		this.cor_word_cnt++;	
-		this.complete_perc=this.cor_word_cnt/19;
-		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
 		
-		
-		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
-		
-		if(this.cor_word_cnt===10 && objects.present0.visible===false && objects.progress_present0.visible===true){
-			objects.progress_present0.visible=false;
-			this.add_present(0);
-		}
-		if(this.cor_word_cnt===14 && objects.present1.visible===false && objects.progress_present1.visible===true){
-			objects.progress_present1.visible=false;
-			this.add_present(1);
-		}
-		if(this.cor_word_cnt===19 && objects.present2.visible===false && objects.progress_present2.visible===true){
-			objects.progress_present2.visible=false;
-			this.add_present(2);
-		}
-		
-		
+
 		sound.play('click');		
 		objects.start_button.alpha=1;
 		
