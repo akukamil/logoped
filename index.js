@@ -398,10 +398,13 @@ game={
 	
 	async move_car(){
 		
+		const spd=3;
 		some_process.car_move=function(){			
-			objects.animal.x-=1;
+			objects.animal.x-=spd;			
+			if(objects.house.visible)
+				objects.house.x-=spd;
 			objects.bcg.tilePosition.x -= 0.5;
-			objects.road.tilePosition.x -= 1;
+			objects.road.tilePosition.x -= spd;
 			objects.wheel0.rotation+=0.1;
 			objects.wheel1.rotation+=0.1;
 			objects.pickup_cont.rotation=Math.sin(objects.car_cont.traveled*3)*0.05;
@@ -409,25 +412,39 @@ game={
 			objects.car_cont.traveled+=0.02;			
 		}
 		
-		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+		await new Promise((resolve, reject) => setTimeout(resolve, 1000));
 				
 		some_process.car_move=function(){};
 		
-		if(objects.animal.x<200){
+		//проверяем доезд до животных
+		if(objects.animal.visible && objects.animal.x<200){
 
-			objects.animal.x=900;
-			objects.animal.texture=gres[this.animals_order[this.cur_animal_id]].texture;
-				
-			
+			//животные в грузовике
 			objects['animal'+this.cur_animal_id].texture=objects.animal.texture;
 			objects['animal'+this.cur_animal_id].visible=true;
 			
-			this.cur_animal_id++;
+			this.cur_animal_id++;			
 			
-			objects.animal.x=900;
-			objects.animal.texture=gres[this.animals_order[this.cur_animal_id]].texture;
-			
+			//следующее животное или теремок
+			if(this.cur_animal_id===6){				
+				objects.house.x=1000;
+				objects.house.visible=true;		
+				objects.animal.visible=false;
+				
+			}else{				
+				objects.animal.x=900;
+				objects.animal.texture=gres[this.animals_order[this.cur_animal_id]].texture;						
+			}
 		}
+		
+		//проверяем доезд до терема
+		if (objects.house.visible && objects.house.x<300){
+			
+			objects.window_animals.x=objects.house.x;
+			this.fill_animals();
+			
+		}		
+		
 		
 		anim2.add(objects.car_cont,{y:[objects.car_cont.y,objects.car_cont.sy]},true,1.5,'easeOutBack');
 		await anim2.add(objects.pickup_cont,{rotation:[objects.pickup_cont.rotation,0]},true,1.5,'easeOutBack');
@@ -436,12 +453,21 @@ game={
 		
 	},
 	
+	async fill_animals(){
+		
+		for(let i=0;i<6;i++){
+			objects['window_animal'+i].visible=true;
+			objects['window_animal'+i].texture=objects['animal'+i].texture;
+			objects['animal'+i].visible=false;
+			await new Promise((resolve, reject) => setTimeout(resolve, 500));
+		}
+		
+		
+	},
+	
 	wrong_answer:function(){			
 		
 		this.move_car();
-		this.cor_word_cnt--;	
-		if(this.cor_word_cnt<0) this.cor_word_cnt=0;
-		this.complete_perc=this.cor_word_cnt/19;
 		
 		sound.play('click');		
 		objects.start_button.alpha=1;
@@ -497,7 +523,7 @@ game={
 		this.stable=false;
 		objects.start_button.tint=objects.start_button.base_tint;
 		
-		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+		//await new Promise((resolve, reject) => setTimeout(resolve, 3000));
 				
 		this.cur_word_index++;
 		this.cur_word_index=this.cur_word_index%this.words.length;
