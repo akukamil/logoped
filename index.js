@@ -317,16 +317,15 @@ game={
 	cur_word_index:0,
 	cor_word_cnt:0,
 	words:[],
-	present_count:0,
+	cur_animal_id:0,
 	stable:true,
+	animals_order:['cow','deer','tiger','ape','penguin','panda'],
+	
 	
 	complete_perc:0,
 	
 	activate: async function(letter) {
-		
-	
-
-	
+			
 		this.words=words[letter];
 		objects.word.text=this.words[this.cur_word_index];
 
@@ -334,19 +333,33 @@ game={
 		this.cur_word_index=0;
 		this.cor_word_cnt=0;
 		
+		
+		objects.animal0.visible=false;
+		objects.animal1.visible=false;
+		objects.animal2.visible=false;
+		objects.animal3.visible=false;
+		objects.animal4.visible=false;
+		objects.animal5.visible=false;
+		
+		
+		this.cur_animal_id=0;
+		objects.animal.x=900;
+		objects.animal.texture=gres[this.animals_order[this.cur_animal_id]].texture;
+		
+		
 		anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
 		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
 		anim2.add(objects.car_cont,{y:[600,objects.car_cont.sy]},true,1,'easeOutBack');
+		
+		
+		
+		
 		
 		objects.ss_bcg.visible=true;
 		objects.ss_front.visible=true;
 		this.complete_perc=0;
 		some_process.game=this.process;
-		
-		
-		
-		
-		
+
 	},
 	
 	close(){
@@ -367,6 +380,7 @@ game={
 	process(){
 		if(is_listening)
 			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
+
 	},
 	
 	back_down(){
@@ -385,29 +399,46 @@ game={
 	async move_car(){
 		
 		some_process.car_move=function(){			
-			objects.progress_present0.x-=0.5;
-			objects.bcg.tilePosition.x -= 0.25;
-			objects.road.tilePosition.x -= 0.5;
+			objects.animal.x-=1;
+			objects.bcg.tilePosition.x -= 0.5;
+			objects.road.tilePosition.x -= 1;
 			objects.wheel0.rotation+=0.1;
 			objects.wheel1.rotation+=0.1;
-			objects.car.rotation=Math.sin(objects.car.traveled*3)*0.05;
-			objects.car.y=objects.car.sy-Math.sin(objects.car.traveled*3)*3;		
-			objects.car.traveled+=0.02;			
+			objects.pickup_cont.rotation=Math.sin(objects.car_cont.traveled*3)*0.05;
+			objects.car_cont.y=objects.car_cont.sy-Math.sin(objects.car_cont.traveled*3)*3;		
+			objects.car_cont.traveled+=0.02;			
 		}
 		
 		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
 				
 		some_process.car_move=function(){};
 		
-		await anim2.add(objects.car,{rotation:[objects.car.rotation,0],y:[objects.car.y,objects.car.sy]},true,1.5,'easeOutBack');
+		if(objects.animal.x<200){
+
+			objects.animal.x=900;
+			objects.animal.texture=gres[this.animals_order[this.cur_animal_id]].texture;
+				
+			
+			objects['animal'+this.cur_animal_id].texture=objects.animal.texture;
+			objects['animal'+this.cur_animal_id].visible=true;
+			
+			this.cur_animal_id++;
+			
+			objects.animal.x=900;
+			objects.animal.texture=gres[this.animals_order[this.cur_animal_id]].texture;
+			
+		}
 		
-		objects.car.traveled=0;
+		anim2.add(objects.car_cont,{y:[objects.car_cont.y,objects.car_cont.sy]},true,1.5,'easeOutBack');
+		await anim2.add(objects.pickup_cont,{rotation:[objects.pickup_cont.rotation,0]},true,1.5,'easeOutBack');
 		
+		objects.car_cont.traveled=0;
 		
 	},
 	
 	wrong_answer:function(){			
 		
+		this.move_car();
 		this.cor_word_cnt--;	
 		if(this.cor_word_cnt<0) this.cor_word_cnt=0;
 		this.complete_perc=this.cor_word_cnt/19;
@@ -416,8 +447,7 @@ game={
 		objects.start_button.alpha=1;
 		objects.start_button.texture=gres.incorrect_img.texture;
 		anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
-		this.next_word();
-		
+		this.next_word();		
 		
 	},
 	
@@ -446,7 +476,6 @@ game={
 		this.show_sun_rays();
 		this.cor_word_cnt++;	
 		
-
 		sound.play('click');		
 		objects.start_button.alpha=1;
 		
