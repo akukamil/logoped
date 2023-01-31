@@ -319,6 +319,7 @@ game={
 	words:[],
 	cur_animal_id:0,
 	stable:true,
+	finish_flag:false,
 	animals_order:['cow','deer','tiger','ape','penguin','panda'],
 	
 	
@@ -333,6 +334,7 @@ game={
 		this.cur_word_index=0;
 		this.cor_word_cnt=0;
 		
+		this.finish_flag=false;
 		
 		objects.animal0.visible=false;
 		objects.animal1.visible=false;
@@ -412,7 +414,7 @@ game={
 			objects.car_cont.traveled+=0.02;			
 		}
 		
-		await new Promise((resolve, reject) => setTimeout(resolve, 1000));
+		await new Promise((resolve, reject) => setTimeout(resolve, 1500));
 				
 		some_process.car_move=function(){};
 		
@@ -441,6 +443,7 @@ game={
 		if (objects.house.visible && objects.house.x<300){
 			
 			objects.window_animals.x=objects.house.x;
+			this.finish_flag=true;
 			this.fill_animals();
 			
 		}		
@@ -455,58 +458,44 @@ game={
 	
 	async fill_animals(){
 		
+		await new Promise((resolve, reject) => setTimeout(resolve, 1500));
+		
 		for(let i=0;i<6;i++){
 			objects['window_animal'+i].visible=true;
 			objects['window_animal'+i].texture=objects['animal'+i].texture;
 			objects['animal'+i].visible=false;
 			await new Promise((resolve, reject) => setTimeout(resolve, 500));
-		}
-		
+		}	
 		
 	},
 	
-	wrong_answer:function(){			
+	async wrong_answer(){			
 		
-		this.move_car();
+		//await this.move_car();
 		
 		sound.play('click');		
 		objects.start_button.alpha=1;
 		objects.start_button.texture=gres.incorrect_img.texture;
-		anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
+		await anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
 		this.next_word();		
 		
 	},
 	
-	async add_present(present_id){
-		
-		
-
-		const loader=new PIXI.Loader();		
-		await new Promise(function(resolve, reject) {			
-			loader.add('present_img', git_src+'/presents/'+irnd(0,53)+'.png',{loadType: PIXI.LoaderResource.LOAD_TYPE.IMAGE, timeout: 3000});						
-			loader.load(function(l,r) {	resolve(l) });
-		});
-		
-		
-		const obj=objects['present'+present_id];
-		obj.texture=gres.present.texture;
-		await anim2.add(obj,{y:[-200,obj.sy]},true,3,'easeOutBounce');		
-		await new Promise((resolve, reject) => setTimeout(resolve, 1000));
-		sound.play('present_sound');
-		obj.texture=loader.resources.present_img.texture;
-	},
-	
-	correct_answer:function(){
+	async correct_answer(){
 			
-		this.move_car();
-		this.show_sun_rays();
-		this.cor_word_cnt++;	
+		this.show_sun_rays();			
 		
-		sound.play('click');		
+		//sound.play('click');		
 		objects.start_button.alpha=1;
 		
 		anim2.add(objects.start_button,{rotation:[0,0.5],scale_xy:[0.666,1]},true,1,'ease2back');
 		objects.start_button.texture=gres.correct_img.texture;
+		await this.move_car();	
+		
+		if (this.finish_flag){			
+			anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},false,0.5,'easeInBack');
+			return;
+		} 
 		this.next_word();
 	},
 	
@@ -518,7 +507,7 @@ game={
 		some_process.rotate_sun_rays=function(){};
 	},
 	
-	next_word:async function(){
+	async next_word(){
 		
 		this.stable=false;
 		objects.start_button.tint=objects.start_button.base_tint;
