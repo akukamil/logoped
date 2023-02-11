@@ -354,6 +354,8 @@ game={
 		else
 			objects.bcg.texture=gres.bcg.texture;
 		
+		objects.ss_bcg.visible=objects.ss_front.visible=true;
+		
 		//в пикапе пока никого нет
 		objects.animals_in_pickup.forEach(a=>a.visible=false);
 						
@@ -398,7 +400,9 @@ game={
 				const result=await this.listen_word();	
 				await this.hide_word_info();	
 				if(result==='correct')
-					break;
+					break
+				else
+					sound.play('lose')
 				
 			}
 
