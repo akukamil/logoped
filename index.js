@@ -403,10 +403,7 @@ game={
 					break
 				else
 					sound.play('lose')
-				
 			}
-
-
 			
 			this.pickup_animal();
 			this.set_next_animal();	
@@ -490,8 +487,6 @@ game={
 	},
 	
 	process(){
-		if(is_listening)
-			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
 
 	},
 	
@@ -673,7 +668,7 @@ game={
 	
 	},
 	
-	listen_word:async function() {
+	async listen_word() {
 		
 		objects.word_result.text='Жди...';
 		if(say) await this.say_word('скажи '+objects.word.text);	
@@ -685,10 +680,8 @@ game={
 
 		objects.start_button.texture=gres.mic.texture;
 		some_process.mic_flash=function(){			
-			objects.start_button.alpha=Math.abs(Math.sin(game_tick));			
+			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));			
 		}
-
-		
 		
 		let final_word ="";
 		const result = await new Promise(function(resolve, reject){
