@@ -705,7 +705,7 @@ game={
 						resolve('wrong')
 				}
 			  
-				if(objects.word.text===final_word)
+				if(objects.word.text===objects.word_result.text)
 					resolve('correct')
 			  
 			};	
