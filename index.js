@@ -733,6 +733,9 @@ game={
 		objects.start_button.texture=gres.start_button.texture;
 		objects.start_button.alpha=1;
 		
+		recognizer.abort();
+		recognizer.stop();
+		
 		return result;
 	}
 
