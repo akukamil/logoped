@@ -314,19 +314,19 @@ recognizer.interimResults = true;
 
 game={
 	
-	cur_word_index:0,
-	cor_word_cnt:0,
 	words:[],
-	present_count:0,
+	cur_animal_id:0,
 	stable:true,
-	
-	complete_perc:0,
-	
+	resolver:0,
+	scr_x:0,
+	cur_word_index:0,
+	animal_cnt:0,	
+	animal_to_pickup:0,
+	finish_flag:false,
+	animals_order:['cow','deer','tiger','ape','penguin','panda'],
+			
 	activate: async function(letter) {
-		
-	
-
-	
+			
 		this.words=words[letter];
 		objects.word.text=this.words[this.cur_word_index];
 
@@ -334,46 +334,137 @@ game={
 		this.cur_word_index=0;
 		this.cor_word_cnt=0;
 		
-		anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
+		this.finish_flag=false;
+					
+		//в пикапе пока никого нет
+		objects.animals_in_pickup.forEach(a=>a.visible=false);
+						
+		//anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
 		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
+		anim2.add(objects.car_cont,{y:[600,objects.car_cont.sy]},true,1,'easeOutBack');
+				
 		objects.ss_bcg.visible=true;
 		objects.ss_front.visible=true;
-		anim2.add(objects.progress_cont,{alpha:[0,1]},true,1,'linear');
-		this.complete_perc=0;
-		objects.progress_bar.width=0;
+		
 		some_process.game=this.process;
 		
+		this.run_game();
+
+	},
+	
+	async run_game(){
 		
-		objects.present0.visible=false;
-		objects.present1.visible=false;
-		objects.present2.visible=false;
-		
-		objects.progress_present0.visible=true;
-		objects.progress_present1.visible=true;
-		objects.progress_present2.visible=true;
+		this.set_next_animal();
+		objects.start_flag.visible=true
+		objects.start_flag.x=objects.start_flag.sx;
+		this.animal_cnt=0;
 		
 		
+		//const s_base_tex=objects.dog.texture.baseTexture;
+		//const t_tex=new PIXI.Texture(s_base_tex,new PIXI.Rectangle(0, 0, s_base_tex.width, 230))
+		//objects.window_animals[0].texture=t_tex;
+	
+		
+		//await this.start_button();
+		
+		
+		for(let a=0;a<6;a++){
+			
+			await this.move_car();			
+			await this.show_word_info();
+			await this.start_button();			
+			const result=await this.listen_word();	
+			await this.hide_word_info();			
+			this.pickup_animal();
+			this.set_next_animal();	
+		}
+		
+		await this.move_car();
+		await this.fill_animals();
+		await this.happy_window_animals();
+		
+		main_menu.activate();
+		
+	},
+	
+	async happy_window_animals(){
+		
+		
+		sound.play('laughting');
+		for(let a of objects.window_animals){
+			a.r_iter=0;
+			a.r_dir=Math.random()*0.25+0.15;
+			if(Math.random()>0.5)
+				a.r_dir=-a.r_dir;
+		}
+		
+		await new Promise((resolve)=>{
+						
+			setTimeout(resolve, 5000);
+			some_process.happy_animals=function(){
+				
+				for(let a of objects.window_animals){
+					a.rotation=Math.sin(a.r_iter)*0.2;
+					a.r_iter+=a.r_dir;
+				}
+			}		
+		})	
+		
+		some_process.happy_animals=function(){};
+		
+	},
+	
+	pickup_animal(){
+
+		sound.play('pickup');
+		objects.animal_to_pick.visible=false;
+		objects.animals_in_pickup[this.animal_cnt].visible=true;
+		objects.animals_in_pickup[this.animal_cnt].texture=objects.animal_to_pick.texture;
+		this.animal_cnt++;
+		
+	},
+	
+	set_next_animal(){
+		
+		//если уже достаточно животных ставим дом
+		if (this.animal_cnt>5) {					
+			
+			objects.house.visible=true;
+			objects.house.x=1600+objects.house.sx;
+			return;
+		}
+		
+		//это очередная фигурка
+		objects.animal_to_pick.visible=false;
+		const animals_textures=[
+			gres.beer.texture,
+			gres.penguin.texture,
+			gres.fox.texture,
+			gres.rabbit.texture,
+			gres.dog.texture,
+			gres.citty.texture,
+			gres.cocoon.texture,
+			gres.panda.texture		
+		];
+		objects.animal_to_pick.texture=animals_textures[this.animal_cnt];
+		objects.animal_to_pick.visible=true;
+		objects.animal_to_pick.x=1900;
 		
 	},
 	
 	close(){
 		
-		objects.present0.visible=false;
-		objects.present1.visible=false;
-		objects.present2.visible=false;
 		
 		objects.main_data.visible=false;
 		objects.back_button.visible=false;
-		objects.ss_bcg.visible=false;
-		objects.ss_front.visible=false;
-		objects.progress_cont.visible=false;
-		some_process.game=this.process;
+		some_process.game=function(){};
 		
 	},
 	
 	process(){
 		if(is_listening)
 			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));		
+
 	},
 	
 	back_down(){
@@ -389,72 +480,107 @@ game={
 		
 	},
 	
-	wrong_answer:function(){			
+	async move_car(){
 		
-		this.cor_word_cnt--;	
-		if(this.cor_word_cnt<0) this.cor_word_cnt=0;
-		this.complete_perc=this.cor_word_cnt/19;
-		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
-		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
+
+		sound.play('engine');
+		let traveled=0;
+		let t=-Math.PI/2;
+		let prv_x=0;
+		const distance_to_travel=1600;
+			
+		some_process.car_move=function(){	
+
+			let passed=(Math.sin(t)+1)*0.5*distance_to_travel;
+			let spd=passed-prv_x;
+			prv_x=passed;
+			
+			//если впереди зверушка
+			if (objects.animal_to_pick.visible)
+				objects.animal_to_pick.x-=spd;	
+			
+			//если впереди домик
+			if(objects.house.visible)
+				objects.house.x-=spd;
+			
+			if(objects.start_flag.visible){				
+				objects.start_flag.x-=spd;
+				if(objects.start_flag.x<-400)
+					objects.start_flag.visible=false;				
+			}
+
+			
+			traveled+=spd;			
+			objects.bcg.tilePosition.x -= spd*0.1;
+			objects.road.tilePosition.x -= spd;
+			objects.wheel0.rotation+=spd/30;
+			objects.wheel1.rotation+=spd/30;
+			objects.pickup_cont.rotation=Math.sin(traveled*0.05)*0.05;
+			objects.car_cont.y=objects.car_cont.sy-Math.sin(traveled*0.05)*3;	
+			
+			if(t>Math.PI/2)			
+				game.resolver();				
+			
+			t+=0.01;
+		}
+		await new Promise(function(resolve, reject){game.resolver=resolve;})
+		some_process.car_move=function(){};
+		
+		this.scr_x+=distance_to_travel;
+						
+		anim2.add(objects.car_cont,{y:[objects.car_cont.y,objects.car_cont.sy]},true,1.5,'easeOutBack');
+		anim2.add(objects.pickup_cont,{rotation:[objects.pickup_cont.rotation,0]},true,1.5,'easeOutBack');
+			
+	},
+	
+	async fill_animals(){
+		
+		//await new Promise((resolve, reject) => setTimeout(resolve, 1500));
+		
+		for(let i=5;i>=0;i--){
+			objects.window_animals[i].visible=true;
+			
+			const s_base_tex=objects.animals_in_pickup[i].texture.baseTexture;
+			const t_tex=new PIXI.Texture(s_base_tex,new PIXI.Rectangle(0, 0, s_base_tex.width, 230))
+			objects.window_animals[i].texture=t_tex;
+			objects.window_animals[i].visible=true;
+			sound.play('animal_window');
+			objects.animals_in_pickup[i].visible=false;
+			await new Promise((resolve, reject) => setTimeout(resolve, 500));
+		}	
+		
+	},
+	
+	async wrong_answer(){			
+		
+		//await this.move_car();
 		
 		sound.play('click');		
 		objects.start_button.alpha=1;
 		objects.start_button.texture=gres.incorrect_img.texture;
-		anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
-		this.next_word();
+		await anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
+		this.next_word();		
 		
 	},
 	
-	async add_present(present_id){
+	async correct_answer(){
+			
+		this.show_sun_rays();			
 		
-		
-
-		const loader=new PIXI.Loader();		
-		await new Promise(function(resolve, reject) {			
-			loader.add('present_img', git_src+'/presents/'+irnd(0,53)+'.png',{loadType: PIXI.LoaderResource.LOAD_TYPE.IMAGE, timeout: 3000});						
-			loader.load(function(l,r) {	resolve(l) });
-		});
-		
-		
-		const obj=objects['present'+present_id];
-		obj.texture=gres.present.texture;
-		await anim2.add(obj,{y:[-200,obj.sy]},true,3,'easeOutBounce');		
-		await new Promise((resolve, reject) => setTimeout(resolve, 1000));
-		sound.play('present_sound');
-		obj.texture=loader.resources.present_img.texture;
-	},
-	
-	correct_answer:function(){
-		
-		
-
-		this.show_sun_rays();
-		this.cor_word_cnt++;	
-		this.complete_perc=this.cor_word_cnt/19;
-		const progress_bar_tar_width=objects.progress_bar.max_width*this.complete_perc;
-		
-		
-		anim2.add(objects.progress_bar,{width:[objects.progress_bar.width,progress_bar_tar_width]},true,0.3,'linear');
-		
-		if(this.cor_word_cnt===10 && objects.present0.visible===false && objects.progress_present0.visible===true){
-			objects.progress_present0.visible=false;
-			this.add_present(0);
-		}
-		if(this.cor_word_cnt===14 && objects.present1.visible===false && objects.progress_present1.visible===true){
-			objects.progress_present1.visible=false;
-			this.add_present(1);
-		}
-		if(this.cor_word_cnt===19 && objects.present2.visible===false && objects.progress_present2.visible===true){
-			objects.progress_present2.visible=false;
-			this.add_present(2);
-		}
-		
-		
-		sound.play('click');		
+		//sound.play('click');		
 		objects.start_button.alpha=1;
 		
 		anim2.add(objects.start_button,{rotation:[0,0.5],scale_xy:[0.666,1]},true,1,'ease2back');
 		objects.start_button.texture=gres.correct_img.texture;
+		
+		
+		
+		await this.move_car();	
+		
+		if (this.finish_flag){			
+			anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},false,0.5,'easeInBack');
+			return;
+		} 
 		this.next_word();
 	},
 	
@@ -466,47 +592,30 @@ game={
 		some_process.rotate_sun_rays=function(){};
 	},
 	
-	next_word:async function(){
+	async show_word_info(){
 		
-		this.stable=false;
-		objects.start_button.tint=objects.start_button.base_tint;
-		
-		await new Promise((resolve, reject) => setTimeout(resolve, 3000));
-				
 		this.cur_word_index++;
 		this.cur_word_index=this.cur_word_index%this.words.length;
-		
-		await anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},true,0.5,'easeInBack');
-		
-		objects.word.text=this.words[this.cur_word_index];					
-		objects.word_result.text='';	
-		objects.start_button.texture=gres.start_button.texture;
-		
+		objects.word.text=this.words[this.cur_word_index];		
+			
 		await anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
-				
-		objects.start_button.interactive=true;
-		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
-		
-		this.stable=true;
 		
 	},
 	
-	start_down:function(){
+	async hide_word_info(){
+					
+		await anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},true,0.5,'easeInBack');
 		
+	},
+	
+	async start_button(){
 		
-		if(is_listening){
-			sound.play('locked');
-			return;			
-		}
-		
-		anim2.add(objects.back_button,{x:[objects.back_button.x,-100]},false,0.5,'easeInBack');
-		objects.start_button.interactive=false;
-		is_listening=true;
-		objects.start_button.texture=gres.mic.texture;
+		objects.start_button.interactive=true;
+		objects.start_button.pointerdown=function(){game.resolver()};		
+		await new Promise(function(resolve, reject){game.resolver=resolve;})
 		
 		sound.play('click');
-		
-		this.listen_word();
+
 	},
 	
 	ss_down:function(){
@@ -548,52 +657,41 @@ game={
 		recognizer.start();		
 		
 		let final_word ="";
-		await new Promise(function(resolve, reject){
+		const result = await new Promise(function(resolve, reject){
 
 			recognizer.onresult = function (event) {
 			  
 			  var result = event.results[event.resultIndex];
 			  objects.word_result.text=result[0].transcript.toUpperCase();
 			  if (result.isFinal) {
-				  final_word = result[0].transcript.toUpperCase()
-				  resolve();
+					final_word = result[0].transcript.toUpperCase()
+					if(objects.word.text===final_word)
+						resolve('correct')
+					else
+						resolve('wrong')
 			  }
 			};	
 		  
 			recognizer.onend = function (event) {   
 			  console.log("onend")
 			  if (final_word==="")
-				resolve();
+				resolve('end');
 			};	
 		  
 			recognizer.onerror = function (event) {
 				console.log(event)     
 				final_word='какая-то ошибка((('
-				resolve();
+				resolve('error');
 			};	
 		  
 			recognizer.onnomatch= function (event) {
-			  console.log("onnomatch")          
-			  resolve();
+			  resolve('onnomatch');
 			};	
 		  
 		});
 		
-		final_word=final_word.replace('Ё','Е');
-		
-		is_listening=false;		
-		objects.word_result.text=final_word;		
-		if(objects.word.text===final_word){
-			sound.play('win');
-			this.correct_answer();
-		}else{
-			this.wrong_answer();
-			sound.play('lose');	
-		}
-		
-
-
-
+		objects.word_result.text=final_word;
+		return result;
 	}
 
 }
@@ -847,20 +945,31 @@ async function load_resources() {
 	//подпапка с ресурсами
 	let lang_pack = 'RUS';
 
+	PIXI.Loader.registerPlugin(PIXI.gif.AnimatedGIFLoader);
 	game_res=new PIXI.Loader();
 	game_res.add("m2_font", git_src+"fonts/MS_Comic_Sans/font.fnt");
 
-
+	game_res.add('engine',git_src+'sounds/engine.mp3');
+	game_res.add('animal_window',git_src+'sounds/animal_window.mp3');
 	game_res.add('click',git_src+'sounds/click.mp3');
 	game_res.add('locked',git_src+'sounds/locked.mp3');
 	game_res.add('win',git_src+'sounds/win.mp3');
 	game_res.add('lose',git_src+'sounds/lose.mp3');
 	game_res.add('present_sound',git_src+'sounds/present.mp3');
+	game_res.add('laughting',git_src+'sounds/laughting.mp3');
+	game_res.add('pickup',git_src+'sounds/pickup.mp3');
+	
 	
     //добавляем из листа загрузки
-    for (var i = 0; i < load_list.length; i++)
+    for (var i = 0; i < load_list.length; i++){
+		
         if (load_list[i].class === "sprite" || load_list[i].class === "image" )
-            game_res.add(load_list[i].name, git_src+'res/'+lang_pack+'/'+load_list[i].name+"."+load_list[i].image_format);	
+            game_res.add(load_list[i].name, git_src+'res/'+lang_pack+'/'+load_list[i].name+"."+load_list[i].image_format);			
+		
+		 if (load_list[i].class === "asprite" )
+            game_res.add(load_list[i].name, git_src+"gifs/" + load_list[i].res_name);
+	}
+
 
 	game_res.onProgress.add(progress);
 	function progress(loader, resource) {
@@ -942,13 +1051,13 @@ async function load_speech_stuff(){
 	console.log("voices loaded")
 		
 	all_voices=await synth.getVoices();
-	alert("all_voices: "+all_voices.length);
+	console.log("all_voices: "+all_voices.length);
 	
 	ru_voices = all_voices.filter(function (el) {
 	  return ['ru-RU','ru_RU'].includes(el.lang)
 	});
 			
-	alert("ru_voices: "+ru_voices.length);
+	console.log("ru_voices: "+ru_voices.length);
 		
 	utterance=new SpeechSynthesisUtterance();
 	
@@ -990,6 +1099,11 @@ async function init_game_env(lang) {
         case "cont":
             eval(load_list[i].code0);
             break;
+			
+        case "asprite":
+			objects[obj_name] = gres[obj_name].animation;
+            eval(load_list[i].code0);
+            break;
 
         case "array":
 			var a_size=load_list[i].size;
@@ -1020,6 +1134,11 @@ async function init_game_env(lang) {
 			eval(load_list[i].code1);
             break;
 
+        case "asprite":	
+			eval(load_list[i].code1);
+            break;
+			
+
         case "array":
 			var a_size=load_list[i].size;
 				for (var n=0;n<a_size;n++)
@@ -1038,7 +1157,7 @@ async function init_game_env(lang) {
 
 function main_loop() {
 
-
+	
 	game_tick+=0.016666666;
 	
 	//обрабатываем минипроцессы
@@ -1049,4 +1168,3 @@ function main_loop() {
 
 	requestAnimationFrame(main_loop);
 }
-
