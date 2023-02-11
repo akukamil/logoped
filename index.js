@@ -407,13 +407,13 @@ game={
 			while(true){
 				
 				await this.show_word_info();
-				await this.start_button();			
+				//await this.start_button();			
 				const result=await this.listen_word();	
 				await this.hide_word_info();	
-				if(result==='correct')
+				//if(result==='correct')
 					break
-				else
-					sound.play('lose')
+				//else
+				//	sound.play('lose')
 			}
 			
 			this.pickup_animal();
@@ -471,8 +471,8 @@ game={
 		//если уже достаточно животных ставим дом
 		if (this.animal_cnt>5) {					
 			
-			objects.house.visible=true;
-			objects.house.x=1600+objects.house.sx;
+			objects.house2_cont.visible=true;
+			objects.house2_cont.x=1600+objects.house2_cont.sx;
 			return;
 		}
 		
@@ -488,8 +488,8 @@ game={
 	
 	close(){
 		
-		objects.house.visible=false;
-		objects.window_animals_cont.visible=false;
+		objects.house2_cont.visible=false;
+		//objects.window_animals_cont.visible=false;
 		objects.car_cont.visible=false;
 		objects.main_data.visible=false;
 		objects.back_button.visible=false;
@@ -534,8 +534,8 @@ game={
 				objects.animal_to_pick.x-=spd;	
 			
 			//если впереди домик
-			if(objects.house.visible)
-				objects.house.x-=spd;
+			if(objects.house2_cont.visible)
+				objects.house2_cont.x-=spd;
 			
 			if(objects.start_flag.visible){				
 				objects.start_flag.x-=spd;
@@ -568,7 +568,7 @@ game={
 	async fill_animals(){
 		
 		//await new Promise((resolve, reject) => setTimeout(resolve, 1500));
-		objects.window_animals_cont.visible=true;
+		//objects.window_animals_cont.visible=true;
 		for(let i=5;i>=0;i--){
 			objects.window_animals[i].visible=true;
 			
