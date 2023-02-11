@@ -715,6 +715,10 @@ game={
 			  if (final_word==="")
 				resolve('end');
 			};	
+			
+			recognizer.onstart = function (event) {   
+			  sound.play('ready');
+			};	
 		  
 			recognizer.onerror = function (event) {
 				console.log(event)     
@@ -1003,7 +1007,7 @@ async function load_resources() {
 	game_res.add('present_sound',git_src+'sounds/present.mp3');
 	game_res.add('laughting',git_src+'sounds/laughting.mp3');
 	game_res.add('pickup',git_src+'sounds/pickup.mp3');
-	
+	game_res.add('ready',git_src+'sounds/ready.mp3');
 	
     //добавляем из листа загрузки
     for (var i = 0; i < load_list.length; i++){
