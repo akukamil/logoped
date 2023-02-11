@@ -312,18 +312,26 @@ var recognizer = new SpeechRecognition();
 recognizer.lang = 'ru-Ru';
 recognizer.interimResults = true;
 
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 game={
 	
 	words:[],
 	cur_animal_id:0,
 	stable:true,
 	resolver:0,
-	scr_x:0,
 	cur_word_index:0,
 	animal_cnt:0,	
 	animal_to_pickup:0,
 	finish_flag:false,
-	animals_order:['cow','deer','tiger','ape','penguin','panda'],
+	animals_textures:[],
 			
 	activate: async function(letter) {
 			
@@ -336,16 +344,23 @@ game={
 		
 		this.finish_flag=false;
 					
+		objects.bcg.tilePosition.x = 0;
+		objects.road.tilePosition.x = 0;	
+				
+		this.animal_cnt=0;
+		
+		if(Math.random()>0.5)
+			objects.bcg.texture=gres.bcg_night.texture;
+		else
+			objects.bcg.texture=gres.bcg.texture;
+		
 		//в пикапе пока никого нет
 		objects.animals_in_pickup.forEach(a=>a.visible=false);
 						
 		//anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
 		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
 		anim2.add(objects.car_cont,{y:[600,objects.car_cont.sy]},true,1,'easeOutBack');
-				
-		objects.ss_bcg.visible=true;
-		objects.ss_front.visible=true;
-		
+						
 		some_process.game=this.process;
 		
 		this.run_game();
@@ -353,28 +368,42 @@ game={
 	},
 	
 	async run_game(){
+				
+		
+		this.animals_textures=shuffleArray([
+			gres.beer.texture,
+			gres.penguin.texture,
+			gres.fox.texture,
+			gres.rabbit.texture,
+			gres.dog.texture,
+			gres.citty.texture,
+			gres.cocoon.texture,
+			gres.panda.texture		
+		]);		
 		
 		this.set_next_animal();
 		objects.start_flag.visible=true
 		objects.start_flag.x=objects.start_flag.sx;
 		this.animal_cnt=0;
-		
-		
-		//const s_base_tex=objects.dog.texture.baseTexture;
-		//const t_tex=new PIXI.Texture(s_base_tex,new PIXI.Rectangle(0, 0, s_base_tex.width, 230))
-		//objects.window_animals[0].texture=t_tex;
-	
-		
-		//await this.start_button();
-		
+				
 		
 		for(let a=0;a<6;a++){
 			
-			await this.move_car();			
-			await this.show_word_info();
-			await this.start_button();			
-			const result=await this.listen_word();	
-			await this.hide_word_info();			
+			await this.move_car();		
+
+			while(true){
+				
+				await this.show_word_info();
+				await this.start_button();			
+				const result=await this.listen_word();	
+				await this.hide_word_info();	
+				if(result==='correct')
+					break;
+				
+			}
+
+
+			
 			this.pickup_animal();
 			this.set_next_animal();	
 		}
@@ -383,6 +412,7 @@ game={
 		await this.fill_animals();
 		await this.happy_window_animals();
 		
+		this.close();
 		main_menu.activate();
 		
 	},
@@ -436,17 +466,9 @@ game={
 		
 		//это очередная фигурка
 		objects.animal_to_pick.visible=false;
-		const animals_textures=[
-			gres.beer.texture,
-			gres.penguin.texture,
-			gres.fox.texture,
-			gres.rabbit.texture,
-			gres.dog.texture,
-			gres.citty.texture,
-			gres.cocoon.texture,
-			gres.panda.texture		
-		];
-		objects.animal_to_pick.texture=animals_textures[this.animal_cnt];
+
+		
+		objects.animal_to_pick.texture=this.animals_textures[this.animal_cnt];
 		objects.animal_to_pick.visible=true;
 		objects.animal_to_pick.x=1900;
 		
@@ -454,7 +476,9 @@ game={
 	
 	close(){
 		
-		
+		objects.house.visible=false;
+		objects.window_animals_cont.visible=false;
+		objects.car_cont.visible=false;
 		objects.main_data.visible=false;
 		objects.back_button.visible=false;
 		some_process.game=function(){};
@@ -525,8 +549,6 @@ game={
 		}
 		await new Promise(function(resolve, reject){game.resolver=resolve;})
 		some_process.car_move=function(){};
-		
-		this.scr_x+=distance_to_travel;
 						
 		anim2.add(objects.car_cont,{y:[objects.car_cont.y,objects.car_cont.sy]},true,1.5,'easeOutBack');
 		anim2.add(objects.pickup_cont,{rotation:[objects.pickup_cont.rotation,0]},true,1.5,'easeOutBack');
@@ -536,7 +558,7 @@ game={
 	async fill_animals(){
 		
 		//await new Promise((resolve, reject) => setTimeout(resolve, 1500));
-		
+		objects.window_animals_cont.visible=true;
 		for(let i=5;i>=0;i--){
 			objects.window_animals[i].visible=true;
 			
