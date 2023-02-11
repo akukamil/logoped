@@ -597,6 +597,7 @@ game={
 		this.cur_word_index++;
 		this.cur_word_index=this.cur_word_index%this.words.length;
 		objects.word.text=this.words[this.cur_word_index];		
+		objects.word_result.text='';		
 			
 		await anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
 		
@@ -654,7 +655,14 @@ game={
 		
 		recognizer.abort();
 		recognizer.stop();
-		recognizer.start();		
+		recognizer.start();	
+
+		objects.start_button.texture=gres.mic.texture;
+		some_process.mic_flash=function(){			
+			objects.start_button.alpha=Math.abs(Math.sin(game_tick));			
+		}
+
+		
 		
 		let final_word ="";
 		const result = await new Promise(function(resolve, reject){
@@ -691,6 +699,10 @@ game={
 		});
 		
 		objects.word_result.text=final_word;
+		some_process.mic_flash=function(){};
+		objects.start_button.texture=gres.start_button.texture;
+		objects.start_button.alpha=1;
+		
 		return result;
 	}
 
