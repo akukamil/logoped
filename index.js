@@ -358,6 +358,9 @@ game={
 		
 		//в пикапе пока никого нет
 		objects.animals_in_pickup.forEach(a=>a.visible=false);
+		
+		//в окнах пока никого нет
+		objects.window_animals.forEach(a=>a.visible=false);
 						
 		//anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
 		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
