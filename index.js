@@ -410,10 +410,10 @@ game={
 				//await this.start_button();			
 				const result=await this.listen_word();	
 				await this.hide_word_info();	
-				//if(result==='correct')
+				if(result==='correct')
 					break
-				//else
-				//	sound.play('lose')
+				else
+					sound.play('lose')
 			}
 			
 			this.pickup_animal();
