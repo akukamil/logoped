@@ -681,6 +681,7 @@ game={
 		
 	async listen_word() {
 		
+		objects.words_bcg.tint=0xffffff;
 		objects.word_result.text='Жди...';
 		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
 		objects.word_result.text='Говори...';
@@ -689,7 +690,7 @@ game={
 		recognizer.stop();
 		recognizer.start();	
 		
-		objects.words_bcg.tint=0xffffff;
+		
 
 
 		some_process.mic_flash=function(){			
@@ -760,7 +761,7 @@ game={
 		else
 			objects.words_bcg.tint=0xff0000;
 		
-		objects.word_result.text=final_word;
+		//objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
 		objects.mic.alpha=1;
 		
