@@ -743,6 +743,10 @@ game={
 		});
 		
 		
+		if(result==='correct')
+			objects.words_bcg.tint=0x00ff00;
+		else
+			objects.words_bcg.tint=0xff0000;
 		
 		objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
