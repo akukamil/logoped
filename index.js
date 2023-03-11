@@ -424,7 +424,7 @@ game={
 		await this.happy_window_animals();
 		
 		this.close();
-		main_menu.activate();
+		voice_menu.activate();
 		
 	},
 	
