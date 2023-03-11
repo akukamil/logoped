@@ -1420,7 +1420,7 @@ function main_loop() {
 	for (let key in some_process)
 		some_process[key]();	
 	
-	if(!document.Hidden)
+	if(!document.hidden)
 		anim2.process();
 
 	requestAnimationFrame(main_loop);
