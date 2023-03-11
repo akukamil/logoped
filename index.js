@@ -281,7 +281,6 @@ recognizer.lang = 'ru-Ru';
 */
 
 
-
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 var recognizer = new SpeechRecognition();
 recognizer.lang = 'ru-Ru';
@@ -1173,6 +1172,8 @@ async function load_speech_stuff(){
 	
 }
 
+
+
 main_menu={
 	
 	activate(){			
@@ -1419,7 +1420,8 @@ function main_loop() {
 	for (let key in some_process)
 		some_process[key]();	
 	
-	anim2.process();
+	if(!document.Hidden)
+		anim2.process();
 
 	requestAnimationFrame(main_loop);
 }
