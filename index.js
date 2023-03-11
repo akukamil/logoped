@@ -639,7 +639,8 @@ game={
 		this.cur_word_index++;
 		this.cur_word_index=this.cur_word_index%this.words.length;
 		objects.word.text=this.words[this.cur_word_index];		
-		objects.word_result.text='';		
+		objects.word_result.text='';	
+		objects.words_bcg.tint=0xffffff;
 			
 		await anim2.add(objects.main_data,{y:[-500, objects.main_data.sy]},true,0.5,'easeOutCubic');
 		
@@ -681,7 +682,7 @@ game={
 		
 	async listen_word() {
 		
-		objects.words_bcg.tint=0xffffff;
+		
 		objects.word_result.text='Жди...';
 		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
 		objects.word_result.text='Говори...';
