@@ -300,7 +300,7 @@ game={
 	words:[],
 	cur_animal_id:0,
 	stable:true,
-	resolver:0,
+	resolver:function(){},
 	cur_word_index:0,
 	animal_cnt:0,	
 	animal_to_pickup:0,
