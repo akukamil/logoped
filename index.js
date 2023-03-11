@@ -308,7 +308,7 @@ game={
 	finish_flag:false,
 	animals_textures:[],
 	stop_flag:false,
-			
+		
 			
 	shuffle(array) {
 	  let currentIndex = array.length,  randomIndex;
@@ -431,9 +431,7 @@ game={
 				await this.hide_word_info();	if(this.stop_flag) return;
 				if(result==='correct')
 					break
-				else
-					sound.play('lose')
-				
+									
 				if(this.stop_flag) return;
 			}
 			
@@ -713,8 +711,6 @@ game={
 		recognizer.start();	
 		
 		
-
-
 		some_process.mic_flash=function(){			
 			objects.mic.alpha=Math.abs(Math.sin(game_tick*3));			
 		}
@@ -778,10 +774,14 @@ game={
 		});
 		
 		
-		if(result==='correct')
-			objects.words_bcg.tint=0x00ff00;
-		else
-			objects.words_bcg.tint=0xff0000;
+		if(result==='correct'){
+			objects.words_bcg.tint=0x00ff00;			
+			sound.play('win')
+		}else{
+			objects.words_bcg.tint=0xff0000;			
+			sound.play('lose')
+		}
+
 		
 		if(this.stop_flag) return;
 		
