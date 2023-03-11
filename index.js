@@ -720,7 +720,7 @@ game={
 			};	
 		  
 			recognizer.onnomatch= function (event) {
-			  resolve('onnomatch');
+			  console.log('onnomatch');
 			};	
 			
 			recognizer.onaudioend= function (event) {
