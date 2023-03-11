@@ -1215,9 +1215,9 @@ voice_menu={
 
 		if (navigator.getUserMedia) {
 		  navigator.getUserMedia({ audio: true }, function(stream) {
-			this.mic_ok=true;
+			voice_menu.mic_ok=true;
 		  }, function(error) {
-			this.mic_ok=false;
+			voice_menu.mic_ok=false;
 		  });
 		} else {
 		  alert('Не могу получить доступ к микрофону');
