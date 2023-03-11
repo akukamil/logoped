@@ -408,6 +408,7 @@ game={
 				await this.show_word_info();
 				//await this.start_button();			
 				const result=await this.listen_word();	
+				await new Promise((resolve, reject) => setTimeout(resolve, 500));
 				await this.hide_word_info();	
 				if(result==='correct')
 					break
@@ -740,6 +741,8 @@ game={
 			};	
 			
 		});
+		
+		
 		
 		objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
@@ -1190,6 +1193,7 @@ voice_menu={
 		if (this.sel_id===-1) return;		
 		objects.choose_voice_cont.visible=false;		
 		this.ok_resolver();
+		main_menu.activate();
 	},
 	
 	test(voice_id){
@@ -1308,8 +1312,6 @@ async function init_game_env(lang) {
 	//load_speech_stuff();
 	await voice_menu.activate();
 			
-	//показыаем основное меню
-	main_menu.activate();
 
 }
 
