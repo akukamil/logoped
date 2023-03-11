@@ -724,19 +724,19 @@ game={
 			};	
 			
 			recognizer.onaudioend= function (event) {
-			  resolve('onaudioend');
+			  console.log('onaudioend');
 			};	
 			
 			recognizer.onaudiostart= function (event) {
-			  resolve('onaudiostart');
+			  console.log('onaudiostart');
 			};	
 			
 			recognizer.onspeechend= function (event) {
-			  resolve('onspeechend');
+			  console.log('onspeechend');
 			};	
 			
 			recognizer.onspeechstart= function (event) {
-			  resolve('onspeechstart');
+			  console.log('onspeechstart');
 			};	
 			
 		});
