@@ -678,6 +678,8 @@ game={
 		recognizer.abort();
 		recognizer.stop();
 		recognizer.start();	
+		
+		objects.words_bcg.tint=0xffffff;
 
 
 		some_process.mic_flash=function(){			
