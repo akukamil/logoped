@@ -488,6 +488,8 @@ game={
 	
 	close(){
 		
+		recognizer.abort();
+		recognizer.stop();
 		objects.house2_cont.visible=false;
 		//objects.window_animals_cont.visible=false;
 		objects.car_cont.visible=false;
@@ -509,7 +511,8 @@ game={
 		}
 		
 		this.close();
-		main_menu.activate();
+		
+		voice_menu.activate();
 		
 		
 	},
