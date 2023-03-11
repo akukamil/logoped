@@ -1292,6 +1292,12 @@ voice_menu={
 			return;
 		}
 		
+		if(this.ru_voices.length===0){
+			alert('Нет голосов. Установите синтезаторы голоса');
+			return;
+		}
+		
+		
 		if (this.sel_id===-1) return;		
 		objects.choose_voice_cont.visible=false;		
 		this.ok_resolver();
