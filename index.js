@@ -332,9 +332,11 @@ game={
 	animal_to_pickup:0,
 	finish_flag:false,
 	animals_textures:[],
+	stop_flag:false,
 			
 	activate: async function(letter) {
 			
+		this.stop_flag=false;
 		this.words=words[letter];
 		objects.word.text=this.words[this.cur_word_index];
 
@@ -405,8 +407,7 @@ game={
 
 			while(true){
 				
-				await this.show_word_info();
-				//await this.start_button();			
+				await this.show_word_info();		
 				const result=await this.listen_word();	
 				await new Promise((resolve, reject) => setTimeout(resolve, 500));
 				await this.hide_word_info();	
@@ -414,15 +415,17 @@ game={
 					break
 				else
 					sound.play('lose')
+				
+				if(this.stop_flag) return;
 			}
 			
 			this.pickup_animal();
 			this.set_next_animal();	
 		}
 		
-		await this.move_car();
-		await this.fill_animals();
-		await this.happy_window_animals();
+		await this.move_car();if(this.stop_flag) return;
+		await this.fill_animals();if(this.stop_flag) return;
+		await this.happy_window_animals();if(this.stop_flag) return;
 		
 		this.close();
 		voice_menu.activate();
@@ -488,8 +491,10 @@ game={
 	
 	close(){
 		
+		this.stop_flag=true;
 		recognizer.abort();
 		recognizer.stop();
+		game.resolver();
 		objects.house2_cont.visible=false;
 		//objects.window_animals_cont.visible=false;
 		objects.car_cont.visible=false;
@@ -556,7 +561,9 @@ game={
 			objects.car_cont.y=objects.car_cont.sy-Math.sin(traveled*0.05)*3;	
 			
 			if(t>Math.PI/2)			
-				game.resolver();				
+				game.resolver();	
+
+			if(this.stop_flag) return;
 			
 			t+=0.01;
 		}
