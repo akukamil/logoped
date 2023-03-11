@@ -403,14 +403,14 @@ game={
 		
 		for(let a=0;a<6;a++){
 			
-			await this.move_car();		
+			await this.move_car();if(this.stop_flag) return;
 
 			while(true){
 				
-				await this.show_word_info();		
-				const result=await this.listen_word();	
+				await this.show_word_info();if(this.stop_flag) return;		
+				const result=await this.listen_word();if(this.stop_flag) return;	
 				await new Promise((resolve, reject) => setTimeout(resolve, 500));
-				await this.hide_word_info();	
+				await this.hide_word_info();	if(this.stop_flag) return;
 				if(result==='correct')
 					break
 				else
