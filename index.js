@@ -1205,6 +1205,7 @@ voice_menu={
 	utter:null,
 	sel_id:-1,
 	ok_resolver:0,
+	mic_ok:false,
 		
 	getLocalStream() {
 		navigator.getUserMedia = navigator.getUserMedia ||
@@ -1214,14 +1215,12 @@ voice_menu={
 
 		if (navigator.getUserMedia) {
 		  navigator.getUserMedia({ audio: true }, function(stream) {
-			alert('Microphone access granted');
-			// Do something with the stream
+			this.mic_ok=true;
 		  }, function(error) {
-			alert('Microphone access denied: ' + error);
-			// Handle the error
+			this.mic_ok=false;
 		  });
 		} else {
-		  alert('getUserMedia not supported in this browser');
+		  alert('Не могу получить доступ к микрофону');
 		}
 	},
 	
@@ -1280,6 +1279,11 @@ voice_menu={
 	},
 	
 	ok_down(){
+		
+		if(!this.mic_ok){
+			alert('Нет доступа к микрофону');
+			return;
+		}
 		
 		if (this.sel_id===-1) return;		
 		objects.choose_voice_cont.visible=false;		
