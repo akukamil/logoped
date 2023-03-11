@@ -311,7 +311,7 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 var recognizer = new SpeechRecognition();
 recognizer.lang = 'ru-Ru';
 recognizer.interimResults = true;
-
+recognizer.continuous  = true;
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -722,7 +722,23 @@ game={
 			recognizer.onnomatch= function (event) {
 			  resolve('onnomatch');
 			};	
-		  
+			
+			recognizer.onaudioend= function (event) {
+			  resolve('onaudioend');
+			};	
+			
+			recognizer.onaudiostart= function (event) {
+			  resolve('onaudiostart');
+			};	
+			
+			recognizer.onspeechend= function (event) {
+			  resolve('onspeechend');
+			};	
+			
+			recognizer.onspeechstart= function (event) {
+			  resolve('onspeechstart');
+			};	
+			
 		});
 		
 		objects.word_result.text=final_word;
