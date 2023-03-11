@@ -350,7 +350,8 @@ game={
 		}
 		
 		
-		
+		objects.road.visible=true;
+		objects.start_flag.visible=true;
 		
 		objects.word.text=this.words[this.cur_word_index];
 
@@ -426,7 +427,8 @@ game={
 			while(true){
 				
 				await this.show_word_info();if(this.stop_flag) return;		
-				const result=await this.listen_word();if(this.stop_flag) return;	
+				const result=await this.say_and_listen_word();if(this.stop_flag) return;	
+				await anim2.add(anim2.empty_spr,{x:[0,1]},false,0.1,'linear');
 				await new Promise((resolve, reject) => setTimeout(resolve, 500));
 				await this.hide_word_info();	if(this.stop_flag) return;
 				if(result==='correct')
@@ -511,6 +513,9 @@ game={
 		recognizer.abort();
 		recognizer.stop();
 		game.resolver();
+		objects.road.visible=false;
+		objects.start_flag.visible=false;
+		objects.animal_to_pick.visible=false;
 		objects.house2_cont.visible=false;
 		//objects.window_animals_cont.visible=false;
 		objects.car_cont.visible=false;
@@ -696,14 +701,13 @@ game={
 		
 	},
 		
-	async listen_word() {
+	async say_and_listen_word() {
 		
 		
 		objects.word_result.text='Жди...';
 		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
 		objects.word_result.text='Говори...';
-		
-		
+				
 		if(this.stop_flag) return;
 		
 		recognizer.abort();
@@ -1201,6 +1205,25 @@ voice_menu={
 	utter:null,
 	sel_id:-1,
 	ok_resolver:0,
+		
+	getLocalStream() {
+		navigator.getUserMedia = navigator.getUserMedia ||
+								 navigator.webkitGetUserMedia ||
+								 navigator.mozGetUserMedia ||
+								 navigator.msGetUserMedia;
+
+		if (navigator.getUserMedia) {
+		  navigator.getUserMedia({ audio: true }, function(stream) {
+			alert('Microphone access granted');
+			// Do something with the stream
+		  }, function(error) {
+			alert('Microphone access denied: ' + error);
+			// Handle the error
+		  });
+		} else {
+		  alert('getUserMedia not supported in this browser');
+		}
+	},
 	
 	get_ru_voices(){
 		
@@ -1224,6 +1247,8 @@ voice_menu={
 	},
 	
 	async activate(){
+		
+		this.getLocalStream()
 				
 		this.synth = window.speechSynthesis;
 		this.utter=new SpeechSynthesisUtterance('привет');
