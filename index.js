@@ -338,7 +338,6 @@ game={
 		this.words=words[letter];
 		objects.word.text=this.words[this.cur_word_index];
 
-		objects.sun_rays.visible=false;
 		this.cur_word_index=0;
 		this.cor_word_cnt=0;
 		
@@ -610,7 +609,7 @@ game={
 		await this.move_car();	
 		
 		if (this.finish_flag){			
-			anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},false,0.5,'easeInBack');
+			anim2.add(objects.main_data,{y:[objects.main_data.y, -500]},false,0.5,'linear');
 			return;
 		} 
 		this.next_word();
@@ -631,13 +630,13 @@ game={
 		objects.word.text=this.words[this.cur_word_index];		
 		objects.word_result.text='';		
 			
-		await anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
+		await anim2.add(objects.main_data,{y:[-500, objects.main_data.sy]},true,0.5,'easeOutCubic');
 		
 	},
 	
 	async hide_word_info(){
 					
-		await anim2.add(objects.main_data,{x:[objects.main_data.sx, -800]},true,0.5,'easeInBack');
+		await anim2.add(objects.main_data,{y:[objects.main_data.y, -500]},false,0.5,'linear');
 		
 	},
 	
@@ -668,30 +667,20 @@ game={
 		
 		
 	},
-	
-	say_word:async function (word) {
-				
-		utterance.text=word;	
-		await new Promise((res,rej)=>{			
-			utterance.onend = res;
-			synth.speak(utterance);	
-		})
-	
-	},
-	
+		
 	async listen_word() {
 		
 		objects.word_result.text='Жди...';
-		if(say) await this.say_word('скажи '+objects.word.text);	
+		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
 		objects.word_result.text='Говори...';
 		
 		recognizer.abort();
 		recognizer.stop();
 		recognizer.start();	
 
-		objects.start_button.texture=gres.mic.texture;
+
 		some_process.mic_flash=function(){			
-			objects.start_button.alpha=Math.abs(Math.sin(game_tick*3));			
+			objects.mic.alpha=Math.abs(Math.sin(game_tick*3));			
 		}
 		
 		let final_word ="";
@@ -738,8 +727,7 @@ game={
 		
 		objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
-		objects.start_button.texture=gres.start_button.texture;
-		objects.start_button.alpha=1;
+		objects.mic.alpha=1;
 		
 		recognizer.abort();
 		recognizer.stop();
@@ -1000,7 +988,7 @@ async function load_resources() {
 
 	PIXI.Loader.registerPlugin(PIXI.gif.AnimatedGIFLoader);
 	game_res=new PIXI.Loader();
-	game_res.add("m2_font", git_src+"fonts/MS_Comic_Sans/font.fnt");
+	game_res.add("m2_font", git_src+"fonts/Neucha/font.fnt");
 
 	game_res.add('engine',git_src+'sounds/engine.mp3');
 	game_res.add('animal_window',git_src+'sounds/animal_window.mp3');
@@ -1089,7 +1077,7 @@ async function define_platform_and_language() {
 
 async function load_speech_stuff(){
 		
-	//await new Promise((resolve, reject) => setTimeout(resolve, 2000));
+
 	synth=window.speechSynthesis;
 	if(!synth) alert("no synth");
 	console.log("synth loaded")
@@ -1110,10 +1098,99 @@ async function load_speech_stuff(){
 	  return ['ru-RU','ru_RU'].includes(el.lang)
 	});
 			
+	objects.choose_voice_text_0.text=ru_voices[0].name;		
+	objects.choose_voice_text_1.text=ru_voices[1].name;		
+	objects.choose_voice_text_2.text=ru_voices[2].name;		
+	objects.choose_voice_cont.visible=true;
 	console.log("ru_voices: "+ru_voices.length);
 		
 	utterance=new SpeechSynthesisUtterance();
 	
+	
+}
+
+voice_menu={
+		
+	ru_voices:null,
+	synth:null,
+	utter:null,
+	sel_id:-1,
+	
+	get_ru_voices(){
+		
+		let _ru_voices=[];
+		const all_voices=this.synth.getVoices();
+		_ru_voices = all_voices.filter(function (el) {
+		  return ['ru-RU','ru_RU'].includes(el.lang)
+		});	
+		return _ru_voices;
+		
+	},
+	
+	async wait_voices(){
+		
+		for(let i=0;i<10;i++){		
+			const ru_voices=this.get_ru_voices();	
+			if (ru_voices.length>0) return true;			
+			await new Promise((resolve, reject) => setTimeout(resolve, 500));
+		}	
+		return false;
+	},
+	
+	async activate(){
+				
+		this.synth = window.speechSynthesis;
+		this.utter=new SpeechSynthesisUtterance('привет');
+
+		if(!this.synth) alert("no synth");
+		console.log("synth loaded")
+				
+		const any_ru_voices=await this.wait_voices();
+		if (!any_ru_voices) alert('Не нашли голоса!');
+		this.ru_voices=this.get_ru_voices();
+
+		objects.choose_voice_text.forEach(e=>e.visible=false);
+		objects.voice_opt_bcg.forEach(e=>e.visible=false);
+		
+		
+		for (let i=0;i<Math.min(this.ru_voices.length,3);i++){
+			objects.choose_voice_text[i].text=this.ru_voices[i].name;
+			objects.choose_voice_text[i].visible=true;
+			objects.voice_opt_bcg[i].visible=true;
+		}
+		objects.choose_voice_cont.visible=true;
+		
+		
+	},
+	
+	ok_down(){
+		
+		objects.choose_voice_cont.visible=false;		
+		
+	},
+	
+	test(voice_id){
+		
+		this.utter.voice=this.ru_voices[voice_id];
+		
+		if(this.sel_id>-1){
+			objects.voice_opt_bcg[this.sel_id].texture=gres.voice_opt_bcg_img.texture;				
+		}
+		this.sel_id=voice_id;		
+		objects.voice_opt_bcg[this.sel_id].texture=gres.voice_opt_bcg_sel_img.texture;			
+	
+		
+		this.synth.speak(this.utter);
+	},
+	
+	say_word(word){		
+		this.utter.text=word;	
+		return new Promise((res,rej)=>{			
+			this.utter.onend = res;
+			this.synth.speak(this.utter);	
+		})
+		
+	}
 	
 }
 
@@ -1128,7 +1205,6 @@ async function init_game_env(lang) {
 	app = new PIXI.Application({width:M_WIDTH, height:M_HEIGHT,antialias:false,backgroundColor : 0x404040});
 	document.body.appendChild(app.view);
 	
-	await load_speech_stuff();
 	
 	resize();
 	window.addEventListener("resize", resize);
@@ -1199,6 +1275,10 @@ async function init_game_env(lang) {
             break;
         }
     }
+	
+	
+	//load_speech_stuff();
+	voice_menu.activate();
 	
 	//запускаем главный цикл
 	main_loop();	
