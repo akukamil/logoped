@@ -331,7 +331,7 @@ game={
 			
 		this.stop_flag=false;
 		
-		
+		//выбор буквы
 		if (letter===''){
 			let sum_arr=[];
 			for(let [key, value] of Object.entries(words)) {
@@ -340,8 +340,6 @@ game={
 				
 			}
 			this.words=this.shuffle(sum_arr);
-			
-			
 		}else{
 			
 			this.words=words[letter];			
@@ -364,6 +362,7 @@ game={
 				
 		this.animal_cnt=0;
 		
+		//выбор фона
 		if(Math.random()>0.5){
 			objects.bcg.texture=gres.bcg.texture;			
 			objects.road.texture=gres.road.texture;			
@@ -512,6 +511,7 @@ game={
 		recognizer.abort();
 		recognizer.stop();
 		game.resolver();
+		some_process.car_move=function(){};
 		objects.road.visible=false;
 		objects.start_flag.visible=false;
 		objects.animal_to_pick.visible=false;
@@ -530,10 +530,6 @@ game={
 	
 	back_down(){
 		
-		if(is_listening || anim2.any_on() || !this.stable){
-			
-			return;
-		}
 		
 		this.close();
 		
@@ -582,12 +578,14 @@ game={
 			
 			if(t>Math.PI/2)			
 				game.resolver();	
-
-			if(this.stop_flag) return;
 			
 			t+=0.01;
 		}
+				
+		
+
 		await new Promise(function(resolve, reject){game.resolver=resolve;})
+		if(this.stop_flag) return;		
 		some_process.car_move=function(){};
 						
 		anim2.add(objects.car_cont,{y:[objects.car_cont.y,objects.car_cont.sy]},true,1.5,'easeOutBack');
@@ -796,7 +794,8 @@ game={
 		recognizer.stop();
 		
 		return result;
-	}
+	},
+
 
 }
 
@@ -1172,7 +1171,14 @@ async function load_speech_stuff(){
 	
 }
 
+vis_change=function() {
 
+	if (document.hidden === true)
+		game.back_down();
+	
+	
+		
+}
 
 main_menu={
 	
@@ -1329,10 +1335,12 @@ async function init_game_env(lang) {
 	
 	app = new PIXI.Application({width:M_WIDTH, height:M_HEIGHT,antialias:false,backgroundColor : 0x404040});
 	document.body.appendChild(app.view);
-	
-	
+		
 	resize();
 	window.addEventListener("resize", resize);
+	
+	//это событие когда меняется видимость приложения
+	document.addEventListener("visibilitychange", vis_change);
 
     //создаем спрайты и массивы спрайтов и запускаем первую часть кода
     for (var i = 0; i < load_list.length; i++) {
@@ -1420,8 +1428,7 @@ function main_loop() {
 	for (let key in some_process)
 		some_process[key]();	
 	
-	if(!document.hidden)
-		anim2.process();
+	anim2.process();
 
 	requestAnimationFrame(main_loop);
 }
