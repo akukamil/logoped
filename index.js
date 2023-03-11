@@ -981,7 +981,7 @@ async function load_resources() {
 	document.getElementById("m_progress").style.display = 'flex';
 
 	git_src="https://akukamil.github.io/logoped/"
-	git_src=""
+	//git_src=""
 
 	//подпапка с ресурсами
 	let lang_pack = 'RUS';
@@ -1115,6 +1115,7 @@ voice_menu={
 	synth:null,
 	utter:null,
 	sel_id:-1,
+	ok_resolver:0,
 	
 	get_ru_voices(){
 		
@@ -1146,27 +1147,33 @@ voice_menu={
 		console.log("synth loaded")
 				
 		const any_ru_voices=await this.wait_voices();
-		if (!any_ru_voices) alert('Не нашли голоса!');
+		if (!any_ru_voices) {
+			alert('Не нашли голоса! Озвучка не возможна!');
+			objects.choose_voice_cont.visible=true;	
+			return;		} 
 		this.ru_voices=this.get_ru_voices();
 
 		objects.choose_voice_text.forEach(e=>e.visible=false);
 		objects.voice_opt_bcg.forEach(e=>e.visible=false);
-		
-		
+				
 		for (let i=0;i<Math.min(this.ru_voices.length,3);i++){
 			objects.choose_voice_text[i].text=this.ru_voices[i].name;
 			objects.choose_voice_text[i].visible=true;
 			objects.voice_opt_bcg[i].visible=true;
 		}
-		objects.choose_voice_cont.visible=true;
-		
+		objects.choose_voice_cont.visible=true;	
+
+		await new Promise(resolver=>{			
+			this.ok_resolver=resolver;			
+		})
 		
 	},
 	
 	ok_down(){
 		
+		if (this.sel_id===-1) return;		
 		objects.choose_voice_cont.visible=false;		
-		
+		this.ok_resolver();
 	},
 	
 	test(voice_id){
@@ -1184,6 +1191,8 @@ voice_menu={
 	},
 	
 	say_word(word){		
+		
+		if (this.ru_voices===null) return;
 		this.utter.text=word;	
 		return new Promise((res,rej)=>{			
 			this.utter.onend = res;
@@ -1276,13 +1285,13 @@ async function init_game_env(lang) {
         }
     }
 	
+	//запускаем главный цикл
+	main_loop();		
+	
 	
 	//load_speech_stuff();
-	voice_menu.activate();
-	
-	//запускаем главный цикл
-	main_loop();	
-		
+	await voice_menu.activate();
+			
 	//показыаем основное меню
 	main_menu.activate();
 
