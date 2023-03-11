@@ -687,6 +687,9 @@ game={
 		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
 		objects.word_result.text='Говори...';
 		
+		
+		if(this.stop_flag) return;
+		
 		recognizer.abort();
 		recognizer.stop();
 		recognizer.start();	
@@ -761,6 +764,8 @@ game={
 			objects.words_bcg.tint=0x00ff00;
 		else
 			objects.words_bcg.tint=0xff0000;
+		
+		if(this.stop_flag) return;
 		
 		//objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
