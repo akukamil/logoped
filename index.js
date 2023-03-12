@@ -752,7 +752,7 @@ game={
 				resolve('error');
 				if(event.error==='not-allowed'){
 					alert('Нет доступа к микрофону');
-					this.back_down();
+					game.back_down();
 					
 				}
 			};	
