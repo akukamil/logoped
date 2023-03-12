@@ -771,7 +771,7 @@ game={
 			
 		});
 		
-		
+		console.log('result: ',result);
 		if(result==='correct'){
 			objects.words_bcg.tint=0x00ff00;			
 			sound.play('win')
