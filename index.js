@@ -1212,7 +1212,7 @@ voice_menu={
 	utter:null,
 	sel_id:-1,
 	ok_resolver:0,
-	mic_ok:false,
+	mic_ok:true,
 		
 	getLocalStream() {
 		navigator.getUserMedia = navigator.getUserMedia ||
@@ -1254,7 +1254,7 @@ voice_menu={
 	
 	async activate(){
 		
-		this.getLocalStream()
+		//this.getLocalStream()
 				
 		this.synth = window.speechSynthesis;
 		this.utter=new SpeechSynthesisUtterance('привет');
