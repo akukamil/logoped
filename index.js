@@ -703,7 +703,7 @@ game={
 		
 		objects.word_result.text='Жди...';
 		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
-		objects.word_result.text='Говори...';
+		
 				
 		if(this.stop_flag) return;
 		
@@ -742,6 +742,7 @@ game={
 			recognizer.onstart = function (event) {  
 				console.log('onstart');
 				sound.play('ready');
+				objects.word_result.text='Говори...';
 				setTimeout(function(){resolve('timeout')}, 6000);
 			};	
 		  
