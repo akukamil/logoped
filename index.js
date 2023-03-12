@@ -1244,7 +1244,7 @@ voice_menu={
 	
 	async wait_voices(){
 		
-		for(let i=0;i<10;i++){		
+		for(let i=0;i<30;i++){		
 			const ru_voices=this.get_ru_voices();	
 			if (ru_voices.length>0) return true;			
 			await new Promise((resolve, reject) => setTimeout(resolve, 500));
