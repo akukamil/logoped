@@ -739,8 +739,9 @@ game={
 				resolve('end');
 			};	
 			
-			recognizer.onstart = function (event) {   
-			  sound.play('ready');
+			recognizer.onstart = function (event) {  
+				console.log('onstart');
+				sound.play('ready');
 			};	
 		  
 			recognizer.onerror = function (event) {
