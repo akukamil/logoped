@@ -750,6 +750,11 @@ game={
 				console.log(event)     
 				final_word='какая-то ошибка((('
 				resolve('error');
+				if(event.error==='not-allowed'){
+					alert('Нет доступа к микрофону');
+					this.back_down();
+					
+				}
 			};	
 		  
 			recognizer.onnomatch= function (event) {
