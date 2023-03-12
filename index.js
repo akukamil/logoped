@@ -719,20 +719,16 @@ game={
 		let final_word ="";
 		const result = await new Promise(function(resolve, reject){
 
+			setTimeout(resolve('timeout'), 5000);
+
 			recognizer.onresult = function (event) {
 			  
-				var result = event.results[event.resultIndex];
-				objects.word_result.text=result[0].transcript.toUpperCase();
-				if (result.isFinal) {
-					console.log('Fin result: ',result);
-					final_word = result[0].transcript.toUpperCase()
-					/*if(objects.word.text===final_word)
-						resolve('correct')
-					else
-						resolve('wrong')*/
-				}
+				const result = event.results[event.resultIndex];
+				const result_text=result[0].transcript.toUpperCase();
+				if(result_text!=='')
+					objects.word_result.text=result_text;
 			  
-				if(objects.word.text===objects.word_result.text)
+				if(objects.word.text===result_text)
 					resolve('correct')
 			  
 			};	
