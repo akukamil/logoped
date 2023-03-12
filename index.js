@@ -719,7 +719,7 @@ game={
 		let final_word ="";
 		const result = await new Promise(function(resolve, reject){
 
-			setTimeout(resolve('timeout'), 5000);
+			setTimeout(function(){resolve('timeout')}, 5000);
 
 			recognizer.onresult = function (event) {
 			  
