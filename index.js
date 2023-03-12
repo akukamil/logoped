@@ -1319,6 +1319,7 @@ voice_menu={
 		
 		if (this.ru_voices===null) return;
 		this.utter.text=word;	
+		this.utter.volume=1;
 		return new Promise((res,rej)=>{			
 			this.utter.onend = res;
 			this.synth.speak(this.utter);	
