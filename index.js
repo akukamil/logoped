@@ -281,7 +281,6 @@ recognizer.lang = 'ru-Ru';
 */
 
 
-var SpeechRecognition = SpeechRecognition;
 var recognizer = new SpeechRecognition();
 recognizer.lang = 'ru-Ru';
 recognizer.interimResults = true;
