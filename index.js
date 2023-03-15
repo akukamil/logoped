@@ -372,8 +372,7 @@ game={
 		}
 
 		
-		objects.ss_bcg.visible=objects.ss_front.visible=false;
-		
+
 		//в пикапе пока никого нет
 		objects.animals_in_pickup.forEach(a=>a.visible=false);
 		
@@ -703,7 +702,7 @@ game={
 		
 		objects.word_result.text='Жди...';
 		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
-		objects.word_result.text='Говори...';
+		
 				
 		if(this.stop_flag) return;
 		
@@ -719,7 +718,7 @@ game={
 		let final_word ="";
 		const result = await new Promise(function(resolve, reject){
 
-			setTimeout(function(){resolve('timeout')}, 5000);
+			
 
 			recognizer.onresult = function (event) {
 			  
@@ -739,14 +738,22 @@ game={
 				resolve('end');
 			};	
 			
-			recognizer.onstart = function (event) {   
-			  sound.play('ready');
+			recognizer.onstart = function (event) {  
+				console.log('onstart');
+				sound.play('ready');
+				objects.word_result.text='Говори...';
+				setTimeout(function(){resolve('timeout')}, 6000);
 			};	
 		  
 			recognizer.onerror = function (event) {
 				console.log(event)     
 				final_word='какая-то ошибка((('
 				resolve('error');
+				if(event.error==='not-allowed'){
+					alert('Нет доступа к микрофону');
+					game.back_down();
+					
+				}
 			};	
 		  
 			recognizer.onnomatch= function (event) {
@@ -1040,7 +1047,7 @@ async function load_resources() {
 	document.getElementById("m_progress").style.display = 'flex';
 
 	git_src="https://akukamil.github.io/logoped/"
-	//git_src=""
+	git_src=""
 
 	//подпапка с ресурсами
 	let lang_pack = 'RUS';
@@ -1209,7 +1216,7 @@ voice_menu={
 	utter:null,
 	sel_id:-1,
 	ok_resolver:0,
-	mic_ok:false,
+	mic_ok:true,
 		
 	getLocalStream() {
 		navigator.getUserMedia = navigator.getUserMedia ||
@@ -1241,7 +1248,7 @@ voice_menu={
 	
 	async wait_voices(){
 		
-		for(let i=0;i<10;i++){		
+		for(let i=0;i<20;i++){		
 			const ru_voices=this.get_ru_voices();	
 			if (ru_voices.length>0) return true;			
 			await new Promise((resolve, reject) => setTimeout(resolve, 500));
@@ -1249,22 +1256,46 @@ voice_menu={
 		return false;
 	},
 	
+	again_down(){
+		
+		if(anim2.any_on()){
+			sound.play('locked');
+			return;
+		}		
+		sound.play('click');
+		
+		anim2.add(objects.no_tts_cont,{y:[objects.no_tts_cont.x,-300]},false,0.5,'easeInBack');
+		voice_menu.activate();
+	},
+	
 	async activate(){
 		
-		this.getLocalStream()
+		//this.getLocalStream()
 				
 		this.synth = window.speechSynthesis;
 		this.utter=new SpeechSynthesisUtterance('привет');
 
 		if(!this.synth) alert("no synth");
 		console.log("synth loaded")
+		
+		some_process.search_tts=function(){			
+			objects.search_tts_anim.rotation=game_tick*3;
+		}
 				
+		anim2.add(objects.search_tts_cont,{y:[-200,objects.search_tts_cont.sy]},true,0.5,'easeOutBack');
+		
 		const any_ru_voices=await this.wait_voices();
+		
+		await anim2.add(objects.search_tts_cont,{y:[objects.search_tts_cont.y,-300]},false,0.5,'easeInBack');
+		
 		if (!any_ru_voices) {
-			alert('Не нашли голоса! Озвучка не возможна!');
-			objects.choose_voice_cont.visible=true;	
-			return;		} 
+			anim2.add(objects.no_tts_cont,{y:[-200,objects.no_tts_cont.y]},true,0.5,'easeOutBack');
+			return;	
+		} 
 		this.ru_voices=this.get_ru_voices();
+
+
+
 
 		objects.choose_voice_text.forEach(e=>e.visible=false);
 		objects.voice_opt_bcg.forEach(e=>e.visible=false);
@@ -1274,7 +1305,9 @@ voice_menu={
 			objects.choose_voice_text[i].visible=true;
 			objects.voice_opt_bcg[i].visible=true;
 		}
-		objects.choose_voice_cont.visible=true;	
+		
+		anim2.add(objects.choose_voice_cont,{y:[-300,objects.choose_voice_cont.y]},true,0.5,'easeOutBack');
+
 
 		await new Promise(resolver=>{			
 			this.ok_resolver=resolver;			
@@ -1283,6 +1316,13 @@ voice_menu={
 	},
 	
 	ok_down(){
+		
+		if(anim2.any_on()){
+			sound.play('locked');
+			return;
+		}		
+		sound.play('click');
+		
 		
 		if(!this.mic_ok){
 			alert('Нет доступа к микрофону');
