@@ -1202,6 +1202,13 @@ main_menu={
 	
 	button_down(letter){
 		
+		
+		if(anim2.any_on()){
+			sound.play('locked');
+			return;
+		}		
+		sound.play('click');
+		
 		this.close();
 		game.activate(letter);
 		
