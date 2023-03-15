@@ -281,7 +281,8 @@ recognizer.lang = 'ru-Ru';
 */
 
 
-var recognizer = new SpeechRecognition();
+var sr = window.SpeechRecognition || window.webkitSpeechRecognition;
+var recognizer = new sr();
 recognizer.lang = 'ru-Ru';
 recognizer.interimResults = true;
 recognizer.continuous  = true;
