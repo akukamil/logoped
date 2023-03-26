@@ -348,14 +348,6 @@ recognizer.lang = 'ru-Ru';
 recognizer.interimResults = true;
 recognizer.continuous  = true;
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
 game={
 	
 	words:[],
@@ -368,25 +360,7 @@ game={
 	finish_flag:false,
 	animals_textures:[],
 	stop_flag:false,
-		
-			
-	shuffle(array) {
-	  let currentIndex = array.length,  randomIndex;
 
-	  // While there remain elements to shuffle.
-	  while (currentIndex != 0) {
-
-		// Pick a remaining element.
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex--;
-
-		// And swap it with the current element.
-		[array[currentIndex], array[randomIndex]] = [
-		  array[randomIndex], array[currentIndex]];
-	  }
-
-	  return array;
-	},
 			
 	activate: async function(letter) {
 			
@@ -440,8 +414,7 @@ game={
 		//в окнах пока никого нет
 		objects.window_animals.forEach(a=>a.visible=false);
 						
-		//anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
-		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
+		//anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');		
 		anim2.add(objects.car_cont,{y:[600,objects.car_cont.sy]},true,1,'easeOutBack');
 						
 		some_process.game=this.process;
@@ -450,27 +423,44 @@ game={
 
 	},
 	
+	selectItemByProbability(arr) {
+
+	  const sum = arr.reduce((acc, item) => acc + item.prob, 0);
+	  const randomNum = Math.random() * sum;
+	  let acc = 0;
+	  for (const item of arr) {
+		acc += item.prob;
+		if (randomNum <= acc) {
+		  return item;
+		}
+	  }
+	},
+	
 	async run_game(){
 				
 		
-		this.animals_textures=shuffleArray([
-			gres.beer.texture,
-			gres.penguin.texture,
-			gres.fox.texture,
-			gres.rabbit.texture,
-			gres.dog.texture,
-			gres.citty.texture,
-			gres.cocoon.texture,
-			gres.panda.texture,
-			gres.beer2.texture,
-			gres.rabbit2.texture,
-			gres.lion.texture,
-			gres.cow.texture,
-			gres.pig.texture,
-			gres.mangoose.texture,
-			gres.slon.texture,
-			
-		]);		
+		//массив животных
+		this.animals_textures=[
+			[gres.beer.texture,Math.random()],
+			[gres.penguin.texture,Math.random()],
+			[gres.fox.texture,Math.random()],
+			[gres.rabbit.texture,Math.random()],
+			[gres.dog.texture,Math.random()],
+			[gres.citty.texture,Math.random()],
+			[gres.cocoon.texture,Math.random()],
+			[gres.panda.texture,Math.random()],
+			[gres.beer2.texture,Math.random()],
+			[gres.rabbit2.texture,Math.random()],
+			[gres.lion.texture,Math.random()],
+			[gres.cow.texture,Math.random()],
+			[gres.pig.texture,Math.random()],
+			[gres.mangoose.texture,Math.random()],
+			[gres.slon.texture,Math.random()],
+			[gres.bigear.texture,Math.random()*3],
+			[gres.kitty.texture,Math.random()*3]			
+		];		
+		
+		this.animals_textures.sort((a, b) => a[1] - b[1]);
 		
 		this.set_next_animal();
 		objects.start_flag.visible=true
@@ -486,6 +476,11 @@ game={
 				
 				await this.show_word_info();
 				const result=await this.say_and_listen_word();
+				if (result==='error'){
+					this.back_down();					
+					return;
+				}
+
 				await anim2.wait(0.5);
 				await this.hide_word_info();
 				if(result==='correct')
@@ -556,7 +551,7 @@ game={
 		objects.animal_to_pick.visible=false;
 
 		
-		objects.animal_to_pick.texture=this.animals_textures[this.animal_cnt];
+		objects.animal_to_pick.texture=this.animals_textures[this.animal_cnt][0];
 		objects.animal_to_pick.visible=true;
 		objects.animal_to_pick.x=1900;
 		
@@ -736,7 +731,7 @@ game={
 	},
 	
 	ss_down:function(){
-		
+		alert('ss');
 		if(say){
 			
 			objects.ss_front.x=objects.ss_front.sx;
@@ -757,25 +752,23 @@ game={
 		
 		
 		objects.word_result.text='Жди...';
-		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
+		await voice_menu.say_word('скажи '+objects.word.text);	
 		
-				
-		if(this.stop_flag) return;
-		
+	
 		recognizer.abort();
 		recognizer.stop();
 		recognizer.start();	
-		
-		
+				
 		some_process.mic_flash=function(){			
 			objects.mic.alpha=Math.abs(Math.sin(game_tick*3));			
 		}
 		
+		
+		objects.back_button.visible=true;
+		
 		let final_word ="";
 		const result = await new Promise(function(resolve, reject){
-
 			
-
 			recognizer.onresult = function (event) {
 			  
 				const result = event.results[event.resultIndex];
@@ -807,8 +800,7 @@ game={
 				resolve('error');
 				if(event.error==='not-allowed'){
 					alert('Нет доступа к микрофону');
-					game.back_down();
-					
+					return 'error'
 				}
 			};	
 		  
@@ -834,6 +826,8 @@ game={
 			
 		});
 		
+		objects.back_button.visible=false;
+		
 		console.log('result: ',result);
 		if(result==='correct'){
 			objects.words_bcg.tint=0x00ff00;			
@@ -843,8 +837,6 @@ game={
 			sound.play('lose')
 		}
 
-		
-		if(this.stop_flag) return;
 		
 		//objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
@@ -1241,17 +1233,18 @@ vis_change=function() {
 main_menu={
 	
 	letters:[[136,77,216,127,'Б'],[226,77,306,127,'БЬ'],[316,77,396,127,'В'],[406,77,486,127,'ВЬ'],[496,77,576,127,'Г'],[586,77,666,127,'ГЬ'],[136,137,216,187,'Д'],[226,137,306,187,'ДЬ'],[316,137,396,187,'Ж'],[406,137,486,187,'З'],[496,137,576,187,'ЗЬ'],[586,137,666,187,'К'],[136,197,216,247,'КЬ'],[226,197,306,247,'Л'],[316,197,396,247,'ЛЬ'],[406,197,486,247,'М'],[496,197,576,247,'МЬ'],[586,197,666,247,'Н'],[136,257,216,307,'НЬ'],[226,257,306,307,'П'],[316,257,396,307,'ПЬ'],[406,257,486,307,'Р'],[496,257,576,307,'РЬ'],[586,257,666,307,'С'],[136,317,216,367,'СЬ'],[226,317,306,367,'Т'],[316,317,396,367,'ТЬ'],[406,317,486,367,'Ф'],[496,317,576,367,'ФЬ'],[586,317,666,367,'Х'],[136,377,216,427,'ХЬ'],[226,377,306,427,'Ц'],[316,377,396,427,'Ч'],[406,377,486,427,'Ш'],[496,377,576,427,'Щ'],[586,377,666,427,'ВСЕ']],
+		
+	selectes_sound:-1,
 	
 	activate(){			
 		
+		objects.letter_select.visible=false;
 		anim2.add(objects.letters_cont,{alpha:[0,1]},true,0.5,'linear');
 		
 	},
 	
-	close(){
-		
+	close(){		
 		anim2.add(objects.letters_cont,{alpha:[1,0]},false,0.5,'linear');
-		
 	},
 	
 	letter_down(e){
@@ -1259,13 +1252,13 @@ main_menu={
 		let mx = e.data.global.x/app.stage.scale.x - objects.letter_choose.x;
 		let my = e.data.global.y/app.stage.scale.y - objects.letter_choose.y;
 		
-		let key = -1;
+		this.selectes_sound = -1;
 		let key_x = 0;
 		let key_y = 0;	
 		let margin = 5;
 		for (let k of this.letters) {			
 			if (mx > k[0] - margin && mx <k[2] + margin  && my > k[1] - margin && my < k[3] + margin) {
-				key = k[4];
+				this.selectes_sound = k[4];
 				key_x = k[0];
 				key_y = k[1];
 				break;
@@ -1273,8 +1266,10 @@ main_menu={
 		}	
 		
 		//не нажата кнопка
-		if (key === -1) return;	
-
+		if (this.selectes_sound === -1) return;	
+		
+		sound.play('click');
+		
 		//подсвечиваем клавишу
 		objects.letter_select.x = key_x - 10;
 		objects.letter_select.y = key_y - 10;		
@@ -1291,7 +1286,7 @@ main_menu={
 		sound.play('click');
 		
 		this.close();
-		game.activate('Б');
+		game.activate(this.selectes_sound);
 	}
 	
 }
@@ -1382,8 +1377,6 @@ voice_menu={
 		this.ru_voices=this.get_ru_voices();
 
 
-
-
 		objects.choose_voice_text.forEach(e=>e.visible=false);
 		objects.voice_opt_bcg.forEach(e=>e.visible=false);
 				
@@ -1394,7 +1387,6 @@ voice_menu={
 		}
 		
 		anim2.add(objects.choose_voice_cont,{y:[-300,objects.choose_voice_cont.y]},true,0.5,'easeOutBack');
-
 
 		await new Promise(resolver=>{			
 			this.ok_resolver=resolver;			
@@ -1447,9 +1439,9 @@ voice_menu={
 		if (this.ru_voices===null) return;
 		this.utter.text=word;	
 		this.utter.volume=1;
-		return new Promise((res,rej)=>{			
-			this.utter.onend = res;
-			this.utter.onerror = res;
+		return new Promise(resolver=>{			
+			this.utter.onend = resolver;
+			this.utter.onerror = resolver;
 			this.synth.speak(this.utter);	
 		})
 		
