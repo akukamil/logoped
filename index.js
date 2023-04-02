@@ -1,8 +1,7 @@
 var M_WIDTH=800, M_HEIGHT=450;
 var app, game_res, game, objects={}, state='', game_tick=0, my_turn=false, git_src='',some_process = {},  game_platform='',is_listening=false,say=true;
-const letters=['Б','В','Г','Д','Ж','З','К','Л','М','Н','П','Р','С','Т','Ф',''];
-const words={'Б':['БАБУШКА УБРАЛАСЬ В ИЗБУШКЕ','РАЗБУДИЛИ БУЛЬДОГА В БУДКЕ','В БОЛЬШОМ БАКЕ БАКТЕРИИ','ЗАБАВНЫЙ БАРАБАНЩИК БЫСТРО УБЕЖАЛ','В БУТЫЛКЕ БУЛЬКАЛ БУЛЬОН','БАЛЕРИНА БЫЛА НА БАЛУ','БОТИНКИ БЫСТРО НАМОКЛИ','АВТОБУС ОБОГНАЛ БУЛЬДОЗЕР','В БУТЫЛКЕ БЫЛ ЦЕЛЕБНЫЙ БАЛЬЗАМ','БАБУШКА ЗАБОТИТСЯ И БАЛУЕТ ВНУКОВ','БОЛЬШОЙ БАНАН','БАБОЧКА НА БАЛКОНЕ','ОБОРОНА БАШНИ','БОЛЬШОЙ БУЛЫЖНИК','БЫВШИЙ БАРАБАНЩИК','БУМЕРАНГ АБОРИГЕНА','БУМАЖНИК БАНКИРА','РЫБЫ В БАНКЕ','БОЛЬШОЙ БАНТ','ГОЛУБОЙ БАНТ'],'В':['ВОЗДУШНАЯ ВАТА','ВОЛК С КОРОВОЙ','ВКУСНАЯ ВЫПЕЧКА','ВЫГОДНЫЙ ВАРИАНТ','ВОКЗАЛ ДЛЯ ДВОИХ','ВОДОЛАЗ ПОД ВОДОЙ','ВОДИТЕЛЬ ТРАМВАЯ','ВОЛШЕБНЫЕ СЛОВА','ВЫПУСКНИК ВОЛНОВАЛСЯ','ВЫЛЕПИТЬ СНЕГОВИКА','ВОТ ВАМ СЛАДКОВАТАЯ ВОДА','ВОРОНА ВОВРЕМЯ УВЕРНУЛАСЬ ОТ ВАЛУНА','НА ВОРОТАХ ВОСЕМЬ ВОРОН','У КОРОВЫ НЕТ ГРИВЫ','ВАХТОВЫЙ АВТОБУС ВОЗИТ ВОЖАТЫХ','ВРУН ВРАЛ ВСЕМ ВОКРУГ','ВОРОН ВЫСОКО ВЗЛЕТЕЛ','ДВОЙНАЯ ВЫГОДА','ВОЛЬНЫЙ ВОИН','ТВОРОЖНЫЕ ВАРЕНИКИ'],'Г':['ГОРОДСКАЯ ГАЗЕТА','ГАЛСТУК В ГОРОШЕК','ГАЛКА НА ГАЗОНЕ','ГОРОД В ГОРАХ','ГРОМКИЙ ГОЛОС','ГОСТИ В ВАГОНЕ','ГОТОВИТЬ ГОВЯДИНУ','ДОГОНЯТЬ ПИНГВИНОВ','ГОЛОДНЫЕ ГОБЛИНЫ','ГОРБАТЫЙ ГНОМ ГОРЬКО ГОРЕВАЛ','ГЕНЕРАЛ ВОЗГЛАВИЛ ГВАРДИЮ','ГОНЩИК ГОТОВ К ГОНКАМ','ФОТОГРАФ ДОГОНЯЛ ПИНГВИНОВ','ОГОНЬ НА БЕРЕГУ ПУГАЛ ПОПУГАЕВ','ЭТА ГРУША ГНИЛАЯ','ГОТОВАЯ ИГРУШКА','ГЛАВНЫЙ  ГОСПИТАЛЬ','ГОРСТКА ГЛИНЫ','ТРОГАТЬ БУМАГУ','ОТГАДАТЬ ГОЛОВОЛОМКУ'],'Д':['У ДВОРНИКА ВЫХОДНОЙ','ДАВНИЙ ДОЛГ','ДАЧА ХУДОЖНИКА','ДАЛЬНЯЯ ДОРОГА','ДОМ В САДУ','НОВОГОДНИЙ ПРАЗДНИК','ХУДОЕ ЧУДОВИЩЕ','ДОЛГИЙ ДОЖДЬ','ОГОРОДЫ ЗА ГОРОДОМ','ДЫХАНИЕ ДРАКОНА','ДОЖДЛИВАЯ ПОГОДА','ДАЛЬНЯЯ ДОРОГА В ДЮНАХ','ВОДОЛАЗ ДОСТАЛ СО ДНА МЕДУЗУ','ДОКТОР ДОТРОНУЛСЯ ДО БЕДРА','ДАЧА ДЕДУШКИ ДАЛЕКО ОТ ГОРОДА','ДОЛГИЙ ДОЖДЬ ВСЕМ НАДОЕЛ','ЛЕДОКОЛ ДАЛЕКО ВО ЛЬДАХ','ЧУДАК ПОДНЯЛСЯ НА ЧЕРДАК','ТЫ ДОЛЖЕН ДОЙТИ ДО ДАЛЬНЕГО ГОРОДА','ПОБЕДА ДОСТАЛАСЬ ДВУМ КОМАНДАМ'],'Ж':['ЖАБА В ЛУЖЕ','ЖАДНЫЙ ЖАДИНА','ТЯЖЕЛАЯ БАРЖА','РЖАНИЕ ЖЕРЕБЕНКА','ЖУЖЖАНИЕ ЖУКА','КОЖАНЫЙ ЖАКЕТ','ЖЕЛАНИЕ ЖИТЬ','НЕЖНАЯ КОЖА','БУМАЖНЫЙ ЖУК','КОЖА ЖИРАФА','БЛИЖЕ К МЕДВЕЖОНКУ','ЖЕВАТЬ ЖЕЛЕ','ЖИЛЕТКА МУЖА','УЖ НЕ МОЖЕТ УЖАЛИТЬ','Я ЖУЮ ЖИДКОЕ МОРОЖЕНОЕ','МОЯ ЖАЛКАЯ НАДЕЖДА НА ЖИЛЬЕ','Я ЖУЮ ЖВАЧКУ','ПОЖАРНИК БЕЖИТ НА ПОЖАР','ЖУК ПОД ОРАНЖЕВЫМ АБАЖУРОМ','ЖАЛКИЙ ЖРЕБИЙ МОЙ'],'З':['ЗАПРЕТНАЯ ЗОНА','НА ЗАВОДЕ ЗАБАСТОВКА','ЗНАНИЕ ЯЗЫКА','ЗАБОТА О ЗДОРОВЬЕ','ЗОРКИЕ ГЛАЗА','ИЗБЫТОК АЗОТА','ПРИЗНАК ГРОЗЫ','ЗАМОК НА ЗАБОРЕ','ЗНАКОМАЯ МУЗЫКА','ЗОЛОТАЯ КАЗНА','БЕЗУМНАЯ ЗАТЕЯ','Я ЗАЕХАЛ НА ЗАВОД','Я ЗАКРЫЛ ГЛАЗА','ГРУЗОВИК С АРБУЗАМИ','ЗВЕНИТ ЗВОНКИЙ ЗВОНОК','МЫ НЕ ЗНАЛИ НАЗВАНИЯ ГРУЗА','КОЗА ЗАБЕЖАЛА В ПОЕЗД','ДЕД МОРОЗ ЗАГАДАЛ ЗАГАДКУ','В ЗООПАРК ПРИВЕЗЛИ ЗУБРА','Я ОПОЗДАЛА НА ЗАНЯТИЯ'],'К':['КАБЕЛЬНЫЙ  КАНАЛ','ТОНКАЯ КАЛЬКА','НЕСКОЛЬКО КУСКОВ','КАНДИДАТ НАУК','ИСКАТЬ КОНФЕТЫ','ВКУСНЫЙ КОФЕ','КУСОК КАБАЧКА','ВЫСКОЧИЛ НА КАМЕНЬ','ЗАКРЫТАЯ КАЛИТКА','КОЛОДА КАРТ','ОСКАЛ ВОЛКА','ЗАКОНЧИЛСЯ КЛЮЧЕВОЙ КАДР','КАНАРЕЙКА В КЛЕТКЕ СКУЧАЕТ','СКАЛОЛАЗ СПУСКАЛСЯ СО СКАЛ','КОШКА ЛАКАЛА МОЛОКО','В КУВШИНЕ КОЗЬЕ МОЛОКО','НА СУКУ КУКУЕТ КУКУШКА','КАПИТАН КУПИЛ КУРТКУ','МЯУКАЕТ МОКРАЯ КОШКА','КОМАНДИР КОМАНДУЕТ'],'Л':['БЕЛЫЙ ЛАНДЫШ','БЕЛЫЙ ГОЛУБЬ','ГЛАДКАЯ ЛАВОЧКА','ЛАСКОВЫЕ ЛАДОШКИ','МИЛАЯ УЛЫБКА','ЛАПКА БЕЛКИ','ЛАТЫ ИЗ ЛАТУНИ','ЛОМКИЙ ВОЛОС','КОЛКАЯ ИГОЛОЧКА','СПЕЛОЕ СЛАДКОЕ ЯБЛОКО','ЛУЧ СОЛНЦА','БЕЛОЕ ПЛАТЬЕ','ЛАМПА УПАЛА НА ПОЛ','МАЛЫШ ИГРАЛ В ЛОТО','У ПЛОТНИКА В ЛАДОНЯХ ЛОБЗИК','ПЛАМЯ ОХВАТИЛО ВЕСЬ ПЛОТ','ЛАЯЛА ЛОХМАТАЯ ЛАЙКА','БЕЛАЯ АКУЛА ИСПУГАЛА АКВАЛАНГИСТА','ОКОЛО ДОМА ЛАЯЛ ПЕС','ПО ВОЛНАМ ПЛЫЛ ПЛОТ'],'М':['МАЛО МАКУЛАТУРЫ','МАЛЫШ МОЛЧИТ','МАГИСТР МАГИИ','МОЕЧНАЯ МАШИНА','МАЛЕНЬКИЙ МАНДАРИН','МОЛОЧНОЕ МОРОЖЕНОЕ','МОЛОДАЯ МАЧЕХА','МОТОР МОПЕДА','МАСКАРАДНАЯ МАСКА','МАССОВЫЙ МАРШ','У ДАМЫ ПАНАМА ИЗ СОЛОМЫ','МАМА МАКНУЛА МАЛИНУ В МОЛОКО','МАМА МОЕТ РАМУ','МАТРОС ЛОМАЕТ ЗАМОК','В ЗАМКЕ МНОГО МРАМОРА','МАМА МОЕТ МЛАДЕНЦА','МЫ ЛЮБИМ МОЛОЧНОЕ МОРОЖЕНОЕ','МАМА СМОТРИТ МУЛЬТФИЛЬМЫ','МЫ НЕ ЛЮБИМ ТОМАТНОЕ МОРОЖЕНОЕ','МОЛОДОЙ МУЖЧИНА'],'Н':['ВКУСНЫЙ АНАНАС','БАНАН НАРЕЗАН','НАЙТИ НАЖИВКУ','НОЧНАЯ СМЕНА','НАША НОША','МОНОТОННЫЙ ЗВОН','НАКОЛКА НА СПИНЕ','ЕДИНЫЙ ЭКЗАМЕН','ЦЫГАНКА НАГАДАЛА НОВУЮ КОМНАТУ','НАЧАЛОСЬ НАГНОЕНИЕ МИЗИНЦА','ТЕЛЕФОН ОТКЛЮЧЕН ЗА НЕУПЛАТУ','НАСТЯ НАРАСТИЛА РЕСНИЦЫ','НА ДЫНЕ СДЕЛАН НАДРЕЗ','НУЖНО СРОЧНО НАЛАДИТЬ ОТНОШЕНИЯ','ЮНОШУ НАГРАДИЛИ НОВЫМ НОУТБУКОМ','СТАРИННЫЕ МАНУСКРИПТЫ','ЗАБАВНАЯ ОБЕЗЬЯНА','НА КОНЧИКЕ НОЖА','НАСТОЯЩЕЕ КИМОНО','НОВЫЙ НАЛОГ'],'П':['ПОЛНЫЙ ПОДГУЗНИК','ПАСПОРТ ПАРНЯ','ПОЛОСАТЫЙ ПЛАТОК','СПУСК СПРАВА','ПАССАЖИР ПОЕЗДА','НАКАПАТЬ КАПЛИ','ПАНТЕРА ПРЫГАЕТ','ПОДМОГА ПОДОСПЕЛА','ОПАСНЫЙ СНЕГОПАД','ПАРТИЯ  ПАРОВОЗОВ','ОПУХШИЙ ПАЛЕЦ','ПОБЫТЬ СПУТНИКОМ','ПОМЫТЬ ПОЛ','ПУЗАТЫЙ НЕПОСЕДА','ПОПУГАЙ ПРОСТО ПОВТОРЯЕТ ЧУЖИЕ СЛОВА','ПЛАВАНИЕ ПОЗВОЛЯЕТ УВЕЛИЧИТЬ ПЛЕЧИ','ПАНТЕРА ПЛАВНО ПРЫГАЕТ ПО ПОЛУ','ПАПА ОТПРАВИЛ ПО ПОЧТЕ ПОСЫЛКУ','НА ПРИЧАЛЕ ОТДЫХАЕТ ПОЛНЫЙ КАПИТАН','ПОРОСЯТА ПОВИЗГИВАЛИ И ПРЫГАЛИ НА ПОЛЯНЕ'],'Р':['КРАСНЫЙ РАК','РАКЕТА РАЗОГНАЛАСЬ','СТАРАЯ РАМА','КРУТЫЕ РОГА','ПЕРВАЯ ГРУППА','ТРУДНЫЕ РОДЫ','ПРАЗДНИК ДЛЯ ДЕТВОРЫ','ПРОВАЛ ПРОЕКТА','ГРОЗА ГРОХОТАЛА','РАЗВИЛКА НАПРАВО','ПРОГНОЗ НА ЗАВТРА','БУЛЬВАР РОЗ','ПРОГУЛКА ПО ПАРКУ','РОДИНКА НА РУКЕ','ПИРАТ ЗАРЫВАЕТ СОКРОВИЩА НА ОСТРОВЕ','НА ФОТОГРАФИИ МОИ ДРУЗЬЯ','ПРОВЕДЕНА ОПЕРАЦИЯ','УРОДИЛСЯ ХОРОШИЙ УРОЖАЙ','С УТРА МЫ БРОДИМ ПО СТАРОМУ ГОРОДУ','РАСЧЕТ КОНСТРУКЦИИ ПРОВЕДЕН АРХИТЕКТОРОМ ВЕРНО'],'С':['САМИ С УСАМИ','СОЛИСТ АНСАМБЛЯ','УСАТЫЙ СОМ','СМОТРЕЛА НА СОРОКУ','СЫТНЫЙ СЫРНИК','СТАРАЯ СУМКА','СЛИВОВЫЙ САД','САМОДЕЛЬНЫЙ САМОКАТ','СВЕТЛАЯ САЛФЕТКА','СОДА В СТАКАНЕ','СОЧИНИТЬ СКАЗКУ','ПОЛОСАТАЯ СОБАКА','СТЫДНО ПЕРЕД СОСЕДЯМИ','Я ПОСАДИЛА САЛАТ И СВЕКЛУ','ТРАВА СОХНЕТ НА СОЛНЦЕ','СТРОГАЯ СУПРУГА СУПЕРМЕНА','С НАМИ В ЛЕСУ БЫЛА СОБА­КА','СОБАКА СМОТРЕЛА НА СОРОКУ','В ЛЕСУ РАСТУТ ВЫСОКИЕ СОСНЫ','САМОЛЕТ ЛЕТИТ ВЫСОКО НАД ЛЕСОМ'],'Т':['ТУРЕЦКИЙ ТАБАК','ПИСТОЛЕТ','ТОЛСТАЯ ТОРПЕДА','ТОНКАЯ ТАЛИЯ','ВТОРОЙ МАТРОС','АТЛЕТ БЕЖИТ','СТАРАЯ ТАВЕРНА','ИНСТРУМЕНТЫ ПЛОТНИКА','ШУСТРЫЙ ЛИЛИПУТ','ПОЧЕТНАЯ ГРАМОТА','КОРОТКАЯ ЛЕНТА','ТОВАРИЩ НА ТАБУРЕТКЕ','ТРЕНЕР ТРЕБУЕТ ТОРОПИТЬСЯ','ТРАМВАЙ ТРОНУЛСЯ БЫСТРО','УТРОМ ВСТАВАТЬ ТРУДНО','ТОЛПА ТОЛКАЕТСЯ В ТОННЕЛЕ','ТАНКИСТ СПИТ ПОД ТАНКОМ','','ТАМАДА ГОВОРИТ КОРОТКИЙ ТОСТ','ТАЛАНТЛИВЫЙ ТАКТИК ЧИТАЕТ МАРШРУТ'],'Ф':['ФАБРИКАНТ НА ФАБРИКЕ','ФАМИЛИЯ ФАНАТА','ФАРАОН В СКАФАНДРЕ','ФУТБОЛЬНЫЙ ФАНАТ','НА ФОТО ЖИРАФЫ','ФАРА АВТОБУСА','ФАСОВАТЬ ФАСОЛЬ','ФОТО АФРИКАНКИ','КОМФОРТНЫЙ ШАРФ','КОСМОНАВТ В СКАФАНДРЕ','ФУТЛЯР ОТ САКСОФОНА','ФУРГОН С ФРУКТАМИ','ФЕХТОВАЛЬЩИК В ФОРМЕ','НОВАЯ ФРАЗА О ФРУКТАХ','У ФАРТУКА ФИОЛЕТОВЫЙ ФОН','ИНТЕРЕСНАЯ ИНФОРМАЦИЯ','ПЕРЕД ФАСАДОМ ПОСАДИЛИ ТРАВКУ','В ТЕСТО ПОЛОЖИЛИ ФУНДУК','ФАСОВЩИК ФАСУЕТ КОНФЕТЫ В ФАНТИКАХ','НАШИ ФЛОРА И ФАУНА ФАНТАСТИЧЕСКИ РАЗНООБРАЗНЫ']}
 var all_voices, ru_voices, synth,utterance;
+var my_data={opp_id : ''};
 
 class letter_class extends PIXI.Container{
 	
@@ -46,7 +45,7 @@ const rgb_to_hex = (r, g, b) => '0x' + [r, g, b].map(x => {
   return hex.length === 1 ? '0' + hex : hex
 }).join('')
 
-anim2 = {
+anim2={
 		
 	c1: 1.70158,
 	c2: 1.70158 * 1.525,
@@ -60,9 +59,13 @@ anim2 = {
 	any_on : function() {
 		
 		for (let s of this.slot)
-			if (s !== null)
+			if (s !== null&&s.block)
 				return true
 		return false;		
+	},
+	
+	wait(seconds){		
+		return this.add(this.empty_spr,{x:[0,1]}, false, seconds,'linear');		
 	},
 	
 	linear: function(x) {
@@ -125,7 +128,7 @@ anim2 = {
 	},
 	
 	ease2back : function(x) {
-		return Math.sin(x*Math.PI);
+		return Math.sin(x*Math.PI*2);
 	},
 	
 	easeInOutCubic: function(x) {
@@ -140,7 +143,7 @@ anim2 = {
 		
 	},	
 	
-	add : function(obj, params, vis_on_end, time, func, anim3_origin) {
+	add : function(obj,params,vis_on_end,time,func,block) {
 				
 		//если уже идет анимация данного спрайта то отменяем ее
 		anim2.kill_anim(obj);
@@ -155,7 +158,7 @@ anim2 = {
 
 				obj.visible = true;
 				obj.ready = false;
-
+				
 				//добавляем дельту к параметрам и устанавливаем начальное положение
 				for (let key in params) {
 					params[key][2]=params[key][1]-params[key][0];					
@@ -169,6 +172,7 @@ anim2 = {
 					
 				this.slot[i] = {
 					obj: obj,
+					block:block===undefined,
 					params: params,
 					vis_on_end: vis_on_end,
 					func: this[func].bind(anim2),
@@ -202,9 +206,6 @@ anim2 = {
 			});			
 			
 		}
-
-		
-		
 
 	},	
 	
@@ -243,11 +244,10 @@ anim2 = {
 
 sound = {
 	
-	on : 1,
+	on : 1,	
 	
-	play : function(snd_res,res_source) {
-		
-		
+	play(snd_res,res_source) {
+				
 		if(res_source===undefined)
 			res_source=gres;
 		
@@ -257,43 +257,96 @@ sound = {
 		if (res_source[snd_res]===undefined)
 			return;
 		
-		res_source[snd_res].sound.play();	
-		
+		res_source[snd_res].sound.play();		
 	}
 	
 	
 }
 
-/*
-var synth = window.speechSynthesis;
+ad = {
+	
+	prv_show : -9999,
+	
+	show : function() {
+		
+		if ((Date.now() - this.prv_show) < 90000 )
+			return false;
+		this.prv_show = Date.now();		
+		
+		if (game_platform==="YANDEX") {			
+			//показываем рекламу
+			window.ysdk.adv.showFullscreenAdv({
+			  callbacks: {
+				onClose: function() {}, 
+				onError: function() {}
+						}
+			})
+		}
+		
+		if (game_platform==="VK") {
+					 
+			vkBridge.send("VKWebAppShowNativeAds", {ad_format:"interstitial"})
+			.then(data => console.log(data.result))
+			.catch(error => console.log(error));	
+		}		
 
-alert("Voces: "+synth.getVoices().length)
+		if (game_platform==="MY_GAMES") {
+					 
+			my_games_api.showAds({interstitial:true});
+		}			
+		
+		if (game_platform==='GOOGLE_PLAY') {
+			if (typeof Android !== 'undefined') {
+				Android.showAdFromJs();
+			}			
+		}
+		
+		
+	},
+	
+	show2 : async function() {
+		
+		
+		if (game_platform ==="YANDEX") {
+			
+			let res = await new Promise(function(resolve, reject){				
+				window.ysdk.adv.showRewardedVideo({
+						callbacks: {
+						  onOpen: () => {},
+						  onRewarded: () => {resolve('ok')},
+						  onClose: () => {resolve('err')}, 
+						  onError: (e) => {resolve('err')}
+					}
+				})
+			
+			})
+			return res;
+		}
+		
+		if (game_platform === "VK") {	
 
-var SpeechSynthesisUtterance = window.webkitSpeechSynthesisUtterance||window.mozSpeechSynthesisUtterance ||window.msSpeechSynthesisUtterance||window.oSpeechSynthesisUtterance||window.SpeechSynthesisUtterance;
-var speech=new SpeechSynthesisUtterance();
-speech.lang = 'ru-Ru';
-speech.rate = 1.25;
+			let res = '';
+			try {
+				res = await vkBridge.send("VKWebAppShowNativeAds", { ad_format: "reward" })
+			}
+			catch(error) {
+				res ='err';
+			}
+			
+			return res;				
+			
+		}	
+		
+		return 'err';
+		
+	}
+}
 
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
-
-var recognizer = new SpeechRecognition();
-recognizer.lang = 'ru-Ru';
-*/
-
-
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
-var recognizer = new SpeechRecognition();
+var sr = window.SpeechRecognition || window.webkitSpeechRecognition;
+var recognizer = new sr();
 recognizer.lang = 'ru-Ru';
 recognizer.interimResults = true;
 recognizer.continuous  = true;
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
 
 game={
 	
@@ -307,25 +360,7 @@ game={
 	finish_flag:false,
 	animals_textures:[],
 	stop_flag:false,
-		
-			
-	shuffle(array) {
-	  let currentIndex = array.length,  randomIndex;
 
-	  // While there remain elements to shuffle.
-	  while (currentIndex != 0) {
-
-		// Pick a remaining element.
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex--;
-
-		// And swap it with the current element.
-		[array[currentIndex], array[randomIndex]] = [
-		  array[randomIndex], array[currentIndex]];
-	  }
-
-	  return array;
-	},
 			
 	activate: async function(letter) {
 			
@@ -372,16 +407,14 @@ game={
 		}
 
 		
-		objects.ss_bcg.visible=objects.ss_front.visible=false;
-		
+
 		//в пикапе пока никого нет
 		objects.animals_in_pickup.forEach(a=>a.visible=false);
 		
 		//в окнах пока никого нет
 		objects.window_animals.forEach(a=>a.visible=false);
 						
-		//anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');
-		anim2.add(objects.back_button,{x:[-200,objects.back_button.sx]},true,0.5,'easeOutBack');
+		//anim2.add(objects.main_data,{x:[1600, objects.main_data.sx]},true,0.5,'easeOutBack');		
 		anim2.add(objects.car_cont,{y:[600,objects.car_cont.sy]},true,1,'easeOutBack');
 						
 		some_process.game=this.process;
@@ -390,27 +423,44 @@ game={
 
 	},
 	
+	selectItemByProbability(arr) {
+
+	  const sum = arr.reduce((acc, item) => acc + item.prob, 0);
+	  const randomNum = Math.random() * sum;
+	  let acc = 0;
+	  for (const item of arr) {
+		acc += item.prob;
+		if (randomNum <= acc) {
+		  return item;
+		}
+	  }
+	},
+	
 	async run_game(){
 				
 		
-		this.animals_textures=shuffleArray([
-			gres.beer.texture,
-			gres.penguin.texture,
-			gres.fox.texture,
-			gres.rabbit.texture,
-			gres.dog.texture,
-			gres.citty.texture,
-			gres.cocoon.texture,
-			gres.panda.texture,
-			gres.beer2.texture,
-			gres.rabbit2.texture,
-			gres.lion.texture,
-			gres.cow.texture,
-			gres.pig.texture,
-			gres.mangoose.texture,
-			gres.slon.texture,
-			
-		]);		
+		//массив животных
+		this.animals_textures=[
+			[gres.beer.texture,Math.random()],
+			[gres.penguin.texture,Math.random()],
+			[gres.fox.texture,Math.random()],
+			[gres.rabbit.texture,Math.random()],
+			[gres.dog.texture,Math.random()],
+			[gres.citty.texture,Math.random()],
+			[gres.cocoon.texture,Math.random()],
+			[gres.panda.texture,Math.random()],
+			[gres.beer2.texture,Math.random()],
+			[gres.rabbit2.texture,Math.random()],
+			[gres.lion.texture,Math.random()],
+			[gres.cow.texture,Math.random()],
+			[gres.pig.texture,Math.random()],
+			[gres.mangoose.texture,Math.random()],
+			[gres.slon.texture,Math.random()],
+			[gres.bigear.texture,Math.random()*3],
+			[gres.kitty.texture,Math.random()*3]			
+		];		
+		
+		this.animals_textures.sort((a, b) => a[1] - b[1]);
 		
 		this.set_next_animal();
 		objects.start_flag.visible=true
@@ -420,29 +470,31 @@ game={
 		
 		for(let a=0;a<6;a++){
 			
-			await this.move_car();if(this.stop_flag) return;
+			await this.move_car();
 
 			while(true){
 				
-				await this.show_word_info();if(this.stop_flag) return;		
-				const result=await this.say_and_listen_word();if(this.stop_flag) return;	
-				await anim2.add(anim2.empty_spr,{x:[0,1]},false,0.1,'linear');
-				await new Promise((resolve, reject) => setTimeout(resolve, 500));
-				await this.hide_word_info();	if(this.stop_flag) return;
+				await this.show_word_info();
+				const result=await this.say_and_listen_word();
+				if (result==='error'){
+					this.back_down();					
+					return;
+				}
+
+				await anim2.wait(0.5);
+				await this.hide_word_info();
 				if(result==='correct')
 					break
-									
-				if(this.stop_flag) return;
 			}
 			
 			this.pickup_animal();
 			this.set_next_animal();	
 		}
 		
-		await this.move_car();if(this.stop_flag) return;
-		await this.fill_animals();if(this.stop_flag) return;
-		await this.happy_window_animals();if(this.stop_flag) return;
-		
+		await this.move_car();
+		await this.fill_animals();
+		await this.happy_window_animals();
+		ad.show();
 		this.close();
 		voice_menu.activate();
 		
@@ -499,7 +551,7 @@ game={
 		objects.animal_to_pick.visible=false;
 
 		
-		objects.animal_to_pick.texture=this.animals_textures[this.animal_cnt];
+		objects.animal_to_pick.texture=this.animals_textures[this.animal_cnt][0];
 		objects.animal_to_pick.visible=true;
 		objects.animal_to_pick.x=1900;
 		
@@ -595,8 +647,6 @@ game={
 	
 	async fill_animals(){
 		
-		//await new Promise((resolve, reject) => setTimeout(resolve, 1500));
-		//objects.window_animals_cont.visible=true;
 		for(let i=5;i>=0;i--){
 			objects.window_animals[i].visible=true;
 			
@@ -606,7 +656,7 @@ game={
 			objects.window_animals[i].visible=true;
 			sound.play('animal_window');
 			objects.animals_in_pickup[i].visible=false;
-			await new Promise((resolve, reject) => setTimeout(resolve, 500));
+			await anim2.wait(0.5);
 		}	
 		
 	},
@@ -681,7 +731,7 @@ game={
 	},
 	
 	ss_down:function(){
-		
+		alert('ss');
 		if(say){
 			
 			objects.ss_front.x=objects.ss_front.sx;
@@ -702,25 +752,23 @@ game={
 		
 		
 		objects.word_result.text='Жди...';
-		if(say) await voice_menu.say_word('скажи '+objects.word.text);	
+		await voice_menu.say_word('скажи '+objects.word.text);	
 		
-				
-		if(this.stop_flag) return;
-		
+	
 		recognizer.abort();
 		recognizer.stop();
 		recognizer.start();	
-		
-		
+				
 		some_process.mic_flash=function(){			
 			objects.mic.alpha=Math.abs(Math.sin(game_tick*3));			
 		}
 		
+		
+		objects.back_button.visible=true;
+		
 		let final_word ="";
 		const result = await new Promise(function(resolve, reject){
-
 			
-
 			recognizer.onresult = function (event) {
 			  
 				const result = event.results[event.resultIndex];
@@ -752,8 +800,7 @@ game={
 				resolve('error');
 				if(event.error==='not-allowed'){
 					alert('Нет доступа к микрофону');
-					game.back_down();
-					
+					return 'error'
 				}
 			};	
 		  
@@ -779,6 +826,8 @@ game={
 			
 		});
 		
+		objects.back_button.visible=false;
+		
 		console.log('result: ',result);
 		if(result==='correct'){
 			objects.words_bcg.tint=0x00ff00;			
@@ -788,8 +837,6 @@ game={
 			sound.play('lose')
 		}
 
-		
-		if(this.stop_flag) return;
 		
 		//objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
@@ -1053,7 +1100,6 @@ async function load_resources() {
 	//подпапка с ресурсами
 	let lang_pack = 'RUS';
 
-	PIXI.Loader.registerPlugin(PIXI.gif.AnimatedGIFLoader);
 	game_res=new PIXI.Loader();
 	game_res.add("m2_font", git_src+"fonts/Neucha/font.fnt");
 
@@ -1136,8 +1182,6 @@ async function define_platform_and_language() {
 	}	
 	
 	game_platform = 'UNKNOWN';	
-	LANG = await language_dialog.show();
-	
 	
 
 }
@@ -1170,42 +1214,79 @@ async function load_speech_stuff(){
 	objects.choose_voice_text_2.text=ru_voices[2].name;		
 	objects.choose_voice_cont.visible=true;
 	console.log("ru_voices: "+ru_voices.length);
-		
-	utterance=new SpeechSynthesisUtterance();
 	
 	
 }
 
 vis_change=function() {
 
-	if (document.hidden === true)
-		game.back_down();
-	
-	
+	if (document.hidden === true){
+		PIXI.sound.pauseAll();		
+		voice_menu.synth.cancel();
+		
+	} else {
+		PIXI.sound.resumeAll();		
+	}
 		
 }
 
 main_menu={
 	
+	letters:[[136,77,216,127,'Б'],[226,77,306,127,'БЬ'],[316,77,396,127,'В'],[406,77,486,127,'ВЬ'],[496,77,576,127,'Г'],[586,77,666,127,'ГЬ'],[136,137,216,187,'Д'],[226,137,306,187,'ДЬ'],[316,137,396,187,'Ж'],[406,137,486,187,'З'],[496,137,576,187,'ЗЬ'],[586,137,666,187,'К'],[136,197,216,247,'КЬ'],[226,197,306,247,'Л'],[316,197,396,247,'ЛЬ'],[406,197,486,247,'М'],[496,197,576,247,'МЬ'],[586,197,666,247,'Н'],[136,257,216,307,'НЬ'],[226,257,306,307,'П'],[316,257,396,307,'ПЬ'],[406,257,486,307,'Р'],[496,257,576,307,'РЬ'],[586,257,666,307,'С'],[136,317,216,367,'СЬ'],[226,317,306,367,'Т'],[316,317,396,367,'ТЬ'],[406,317,486,367,'Ф'],[496,317,576,367,'ФЬ'],[586,317,666,367,'Х'],[136,377,216,427,'ХЬ'],[226,377,306,427,'Ц'],[316,377,396,427,'Ч'],[406,377,486,427,'Ш'],[496,377,576,427,'Щ'],[586,377,666,427,'ВСЕ']],
+		
+	selectes_sound:-1,
+	
 	activate(){			
 		
-		objects.main_menu_header.visible=true;
-		objects.letter_buttons.forEach(l=>l.visible=true);
+		objects.letter_select.visible=false;
+		anim2.add(objects.letters_cont,{alpha:[0,1]},true,0.5,'linear');
 		
 	},
 	
-	close(){
-		
-		objects.main_menu_header.visible=false;
-		objects.letter_buttons.forEach(l=>l.visible=false);
-		
+	close(){		
+		anim2.add(objects.letters_cont,{alpha:[1,0]},false,0.5,'linear');
 	},
 	
-	button_down(letter){
+	letter_down(e){
+		
+		let mx = e.data.global.x/app.stage.scale.x - objects.letter_choose.x;
+		let my = e.data.global.y/app.stage.scale.y - objects.letter_choose.y;
+		
+		this.selectes_sound = -1;
+		let key_x = 0;
+		let key_y = 0;	
+		let margin = 5;
+		for (let k of this.letters) {			
+			if (mx > k[0] - margin && mx <k[2] + margin  && my > k[1] - margin && my < k[3] + margin) {
+				this.selectes_sound = k[4];
+				key_x = k[0];
+				key_y = k[1];
+				break;
+			}
+		}	
+		
+		//не нажата кнопка
+		if (this.selectes_sound === -1) return;	
+		
+		sound.play('click');
+		
+		//подсвечиваем клавишу
+		objects.letter_select.x = key_x - 10;
+		objects.letter_select.y = key_y - 10;		
+		objects.letter_select.visible=true;
+	
+	},
+	
+	start_down(){
+		
+		if(anim2.any_on()){
+			sound.play('locked');
+			return;
+		}	
+		sound.play('click');
 		
 		this.close();
-		game.activate(letter);
-		
+		game.activate(this.selectes_sound);
 	}
 	
 }
@@ -1249,12 +1330,24 @@ voice_menu={
 	
 	async wait_voices(){
 		
-		for(let i=0;i<30;i++){		
+		for(let i=0;i<20;i++){		
 			const ru_voices=this.get_ru_voices();	
 			if (ru_voices.length>0) return true;			
 			await new Promise((resolve, reject) => setTimeout(resolve, 500));
 		}	
 		return false;
+	},
+	
+	again_down(){
+		
+		if(anim2.any_on()){
+			sound.play('locked');
+			return;
+		}		
+		sound.play('click');
+		
+		anim2.add(objects.no_tts_cont,{y:[objects.no_tts_cont.x,-300]},false,0.5,'easeInBack');
+		voice_menu.activate();
 	},
 	
 	async activate(){
@@ -1266,13 +1359,23 @@ voice_menu={
 
 		if(!this.synth) alert("no synth");
 		console.log("synth loaded")
+		
+		some_process.search_tts=function(){			
+			objects.search_tts_anim.rotation=game_tick*3;
+		}
 				
+		anim2.add(objects.search_tts_cont,{y:[-200,objects.search_tts_cont.sy]},true,0.5,'easeOutBack');
+		
 		const any_ru_voices=await this.wait_voices();
+		
+		await anim2.add(objects.search_tts_cont,{y:[objects.search_tts_cont.y,-300]},false,0.5,'easeInBack');
+		
 		if (!any_ru_voices) {
-			alert('Не нашли голоса! Озвучка не возможна!');
-			objects.choose_voice_cont.visible=true;	
-			return;		} 
+			anim2.add(objects.no_tts_cont,{y:[-200,objects.no_tts_cont.y]},true,0.5,'easeOutBack');
+			return;	
+		} 
 		this.ru_voices=this.get_ru_voices();
+
 
 		objects.choose_voice_text.forEach(e=>e.visible=false);
 		objects.voice_opt_bcg.forEach(e=>e.visible=false);
@@ -1282,7 +1385,8 @@ voice_menu={
 			objects.choose_voice_text[i].visible=true;
 			objects.voice_opt_bcg[i].visible=true;
 		}
-		objects.choose_voice_cont.visible=true;	
+		
+		anim2.add(objects.choose_voice_cont,{y:[-300,objects.choose_voice_cont.y]},true,0.5,'easeOutBack');
 
 		await new Promise(resolver=>{			
 			this.ok_resolver=resolver;			
@@ -1291,6 +1395,13 @@ voice_menu={
 	},
 	
 	ok_down(){
+		
+		if(anim2.any_on()){
+			sound.play('locked');
+			return;
+		}		
+		sound.play('click');
+		
 		
 		if(!this.mic_ok){
 			alert('Нет доступа к микрофону');
@@ -1328,8 +1439,9 @@ voice_menu={
 		if (this.ru_voices===null) return;
 		this.utter.text=word;	
 		this.utter.volume=1;
-		return new Promise((res,rej)=>{			
-			this.utter.onend = res;
+		return new Promise(resolver=>{			
+			this.utter.onend = resolver;
+			this.utter.onerror = resolver;
 			this.synth.speak(this.utter);	
 		})
 		
@@ -1344,6 +1456,8 @@ async function init_game_env(lang) {
 			
 	//загружаем ресурсы
 	await load_resources();	
+	await define_platform_and_language();
+	await auth2.init();
 	
 	app = new PIXI.Application({width:M_WIDTH, height:M_HEIGHT,antialias:false,backgroundColor : 0x404040});
 	document.body.appendChild(app.view);
