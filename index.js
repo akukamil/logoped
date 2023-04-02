@@ -728,7 +728,7 @@ game={
 				if(result_text!=='')
 					objects.word_result.text=result_text;
 			  
-				if(objects.word.text===result_text)
+				if(objects.word.text.replace(/\s/g, '')===result_text.replace(/\s/g, ''))
 					resolve('correct')
 			  
 			};	
