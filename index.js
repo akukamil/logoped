@@ -361,13 +361,20 @@ game={
 	animals_textures:[],
 	stop_flag:false,
 
+	shuffle(arr) {
+	   for (let i = arr.length - 1; 0 < i; i--) {
+		  const j = Math.floor(Math.random() * i);
+		  [arr[i], arr[j]] = [arr[j], arr[i]];
+	   }
+	   return arr
+	},
 			
 	activate: async function(letter) {
 			
 		this.stop_flag=false;
 		
 		//выбор буквы
-		if (letter===''){
+		if (letter==='ВСЕ'){
 			let sum_arr=[];
 			for(let [key, value] of Object.entries(words)) {
 				
