@@ -776,12 +776,12 @@ game={
 		objects.back_button.visible=true;
 		
 		let final_word ="";
-		const result = await new Promise(function(resolve, reject){
+		let result = await new Promise(function(resolve, reject){
 			
 			recognizer.onresult = function (event) {
 			  
 				const result = event.results[event.resultIndex];
-				const result_text=result[0].transcript.toUpperCase();
+				let result_text=result[0].transcript.toUpperCase();
 				result_text=result_text.replace('Ё','Е');
 				
 				if(result_text!=='')
