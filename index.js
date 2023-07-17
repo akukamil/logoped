@@ -466,7 +466,8 @@ game={
 			[gres.mangoose.texture,Math.random()],
 			[gres.slon.texture,Math.random()],
 			[gres.bigear.texture,Math.random()*3],
-			[gres.kitty.texture,Math.random()*3]			
+			[gres.kitty.texture,Math.random()*3],
+			[gres.potter.texture,Math.random()*3],
 		];		
 		
 		this.animals_textures.sort((a, b) => a[1] - b[1]);
