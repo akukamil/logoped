@@ -371,7 +371,7 @@ game={
 	   return arr
 	},
 			
-	activate: async function(letter) {
+	async activate(letter) {
 			
 		this.stop_flag=false;
 		
@@ -431,20 +431,7 @@ game={
 		this.run_game();
 
 	},
-	
-	selectItemByProbability(arr) {
-
-	  const sum = arr.reduce((acc, item) => acc + item.prob, 0);
-	  const randomNum = Math.random() * sum;
-	  let acc = 0;
-	  for (const item of arr) {
-		acc += item.prob;
-		if (randomNum <= acc) {
-		  return item;
-		}
-	  }
-	},
-	
+		
 	async run_game(){
 				
 		
@@ -468,6 +455,7 @@ game={
 			[gres.bigear.texture,Math.random()*3],
 			[gres.kitty.texture,Math.random()*3],
 			[gres.potter.texture,Math.random()*3],
+			[gres.wednesday.texture,Math.random()*3],
 		];		
 		
 		this.animals_textures.sort((a, b) => a[1] - b[1]);
