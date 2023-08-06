@@ -362,6 +362,7 @@ game={
 	finish_flag:false,
 	animals_textures:[],
 	stop_flag:false,
+	life:5,
 
 	shuffle(arr) {
 	   for (let i = arr.length - 1; 0 < i; i--) {
@@ -396,6 +397,7 @@ game={
 		
 		objects.word.text=this.words[this.cur_word_index];
 
+		this.life=3;
 		this.cur_word_index=0;
 		this.cor_word_cnt=0;
 		
@@ -474,6 +476,12 @@ game={
 				
 				await this.show_word_info();
 				const result=await this.say_and_listen_word();
+				
+				if (this.life===0){
+					this.back_down();					
+					return;
+				}
+				
 				if (result==='error'){
 					this.back_down();					
 					return;
@@ -585,6 +593,12 @@ game={
 		
 		voice_menu.activate();
 		
+		
+	},
+	
+	decrease_life(){
+		
+		this.life--;
 		
 	},
 	
@@ -833,7 +847,8 @@ game={
 			objects.words_bcg.tint=0x00ff00;			
 			sound.play('win')
 		}else{
-			objects.words_bcg.tint=0xff0000;			
+			objects.words_bcg.tint=0xff0000;
+			this.decrease_life();
 			sound.play('lose')
 		}
 
