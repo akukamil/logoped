@@ -1372,7 +1372,8 @@ voice_menu={
 				
 		this.synth = window.speechSynthesis;
 		this.utter=new SpeechSynthesisUtterance('привет');
-
+		this.utter.rate=this.rate;
+		
 		if(!this.synth) alert("no synth");
 		console.log("synth loaded")
 		
