@@ -322,6 +322,10 @@ game={
 		this.cur_word_index=0;
 		this.cor_word_cnt=0;
 		
+		objects.life.visible=true
+		objects.lifeMask.visible=true
+		objects.lifeMask.width=120
+		
 		this.finish_flag=false;
 					
 		objects.bcg.tilePosition.x = 0;
@@ -337,8 +341,7 @@ game={
 			objects.bcg.texture=gres.bcg1.texture;			
 			objects.road.texture=gres.road1.texture;	
 		}
-
-		
+	
 
 		//в пикапе пока никого нет
 		objects.animals_in_pickup.forEach(a=>a.visible=false);
@@ -365,16 +368,21 @@ game={
 			[2,Math.random()],
 			[3,Math.random()],
 			[4,Math.random()],
-			[5,Math.random()],
-			[6,Math.random()],
+			[5,Math.random()*2],
+			[6,Math.random()*2],
 			[7,Math.random()*2],
 			[8,Math.random()*2],
-			[9,Math.random()*5],
+			[9,Math.random()*2],
 			[10,Math.random()*3],
 			[11,Math.random()*3],
 			[12,Math.random()*3],
 			[13,Math.random()*3],
-			[14,Math.random()*3]
+			[14,Math.random()*3],
+			[15,Math.random()*4],
+			[16,Math.random()*4],
+			[17,Math.random()*4],
+			[18,Math.random()*4],
+			[19,Math.random()*4]
 		];		
 		
 		this.nextHeroID.sort((a, b) => a[1] - b[1])
@@ -487,6 +495,10 @@ game={
 		recognizer.stop();
 		game.resolver();
 		some_process.car_move=function(){};
+		
+		
+		objects.life.visible=false
+		objects.lifeMask.visible=false
 		objects.road.visible=false;
 		objects.start_flag.visible=false;
 		objects.animal_to_pick.visible=false;
@@ -516,6 +528,7 @@ game={
 	decrease_life(){
 		
 		this.life--;
+		objects.lifeMask.width=40*this.life
 		
 	},
 	
@@ -579,8 +592,15 @@ game={
 		for(let i=5;i>=0;i--){
 			objects.window_animals[i].visible=true;
 			
-			const s_base_tex=objects.animals_in_pickup[i].texture.baseTexture;
-			const t_tex=new PIXI.Texture(s_base_tex,new PIXI.Rectangle(0, 0, s_base_tex.width, 230))
+			const heroTexture=objects.animals_in_pickup[i].texture
+			const baseTexture=heroTexture.baseTexture;
+			
+			const x=heroTexture.frame.x
+			const y=heroTexture.frame.y
+			const w=heroTexture.frame.width
+			const h=heroTexture.frame.height
+			
+			const t_tex=new PIXI.Texture(baseTexture,new PIXI.Rectangle(x, y, w, 230))
 			objects.window_animals[i].texture=t_tex;
 			objects.window_animals[i].visible=true;
 			sound.play('animal_window');
@@ -589,48 +609,7 @@ game={
 		}	
 		
 	},
-	
-	async wrong_answer(){			
-		
-		//await this.move_car();
-		
-		sound.play('click');		
-		objects.start_button.alpha=1;
-		objects.start_button.texture=gres.incorrect_img.texture;
-		await anim2.add(objects.start_button,{scale_xy:[0.666,1]},true,0.8,'ease2back');
-		this.next_word();		
-		
-	},
-	
-	async correct_answer(){
 			
-		this.show_sun_rays();			
-		
-		//sound.play('click');		
-		objects.start_button.alpha=1;
-		
-		anim2.add(objects.start_button,{rotation:[0,0.5],scale_xy:[0.666,1]},true,1,'ease2back');
-		objects.start_button.texture=gres.correct_img.texture;
-		
-		
-		
-		await this.move_car();	
-		
-		if (this.finish_flag){			
-			anim2.add(objects.main_data,{y:[objects.main_data.y, -500]},false,0.5,'linear');
-			return;
-		} 
-		this.next_word();
-	},
-	
-	async show_sun_rays(){
-		
-		some_process.rotate_sun_rays=function(){objects.sun_rays.rotation+=0.05};
-		await anim2.add(objects.sun_rays,{alpha:[0, 0.5],scale_xy:[1,2]},true,2,'linear');
-		await anim2.add(objects.sun_rays,{alpha:[0.5, 0],scale_xy:[2,1]},false,2,'linear');
-		some_process.rotate_sun_rays=function(){};
-	},
-	
 	async show_word_info(){
 		
 		this.cur_word_index++;
@@ -678,12 +657,10 @@ game={
 	},
 		
 	async say_and_listen_word() {
-		
-		
+				
 		objects.word_result.text='Жди...';
 		await voice_menu.say_word('скажи '+objects.word.text);	
-		
-	
+			
 		recognizer.abort();
 		recognizer.stop();
 		recognizer.start();	
@@ -691,8 +668,7 @@ game={
 		some_process.mic_flash=function(){			
 			objects.mic.alpha=Math.abs(Math.sin(game_tick*3));			
 		}
-		
-		
+				
 		objects.back_button.visible=true;
 		
 		let final_word ="";
@@ -768,7 +744,6 @@ game={
 			this.decrease_life();
 			sound.play('lose')
 		}
-
 		
 		//objects.word_result.text=final_word;
 		some_process.mic_flash=function(){};
@@ -1376,7 +1351,10 @@ voice_menu={
 			return;
 		}		
 		
-		anim2.add(objects.voice_opt_spd_down_button,{alpha:[0.5,1]},true,0.25,'easeInBack');
+		
+		const btnSpr=dir===1?objects.voice_opt_spd_up_button:objects.voice_opt_spd_down_button
+		anim2.add(btnSpr,{alpha:[0.5,1]},true,0.25,'easeInBack');
+		
 		sound.play('click');
 		
 		const new_utter=this.rate+dir*0.1;
@@ -1393,8 +1371,7 @@ voice_menu={
 		this.synth.speak(this.utter);
 		
 	},
-	
-	
+		
 	ok_down(){
 		
 		if(anim2.any_on()){
